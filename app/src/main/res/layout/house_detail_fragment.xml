@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tool="http://schemas.android.com/tools"
+    tool:context=".HouseDetailFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="260dp">
+
+            <com.smarteist.autoimageslider.SliderView
+                android:id="@+id/image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                app:sliderAnimationDuration="600"
+                app:sliderAutoCycleDirection="back_and_forth"
+                app:sliderAutoCycleEnabled="true"
+                app:sliderIndicatorAnimationDuration="600"
+                app:sliderIndicatorGravity="center_horizontal|bottom"
+                app:sliderIndicatorMargin="15dp"
+                app:sliderIndicatorOrientation="horizontal"
+                app:sliderIndicatorPadding="3dp"
+                app:sliderIndicatorRadius="2dp"
+                app:sliderIndicatorSelectedColor="@color/colorPrimaryDark"
+                app:sliderIndicatorUnselectedColor="@color/colorAccent"
+                app:sliderScrollTimeInSec="2"
+                app:sliderStartAutoCycle="true" />
+
+            <ImageButton
+                android:id="@+id/favourite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@null"
+                android:src="@drawable/outline_favorite_border_24" />
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/house_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="Kí túc sá"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+
+                <TextView
+                    android:id="@+id/rent_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="8.0 Tr/Tháng"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/house_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marging_top_item_house_detail"
+                android:maxLines="1"
+                android:text="Kí túc xá đại học Quốc Gia Hà Nội"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/house_address_label"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marging_top_item_house_detail"
+                android:text="@string/address"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:drawableEndCompat="@drawable/outline_map_24" />
+
+            <TextView
+                android:id="@+id/house_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="144/187/12 Nguyễn Thanh Long Phường 7 Quận Ba Bình, Nguyên Ngọc Phương"
+                android:textAppearance="?attr/textAppearanceBody2" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marging_top_item_house_detail"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/near_point_distance"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="From Hutech Khu AB: 8 km"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+
+                <TextView
+                    android:id="@+id/house_area"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/near_point_distance"
+                    android:text="Area: 35 m2"
+                    android:textAppearance="?attr/textAppearanceBody2" />
+
+                <TextView
+                    android:id="@+id/sale_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/rent_only"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/mote_detail_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/marging_top_item_house_detail"
+                android:text="@string/more_detail"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:drawableEndCompat="@drawable/outline_expand_more_24" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="?android:attr/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/more_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingMultiplier="1.15"
+                android:maxLines="0"
+                android:padding="8dp"
+                android:text="@string/more_detail_house"
+                android:textAppearance="?attr/textAppearanceBody2" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/send_contact_button"
+                style="@style/Widget.Shelter.Button"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:text="@string/send_contact"
+                app:shapeAppearance="@style/ShapeAppearance.App.LargeComponent" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>

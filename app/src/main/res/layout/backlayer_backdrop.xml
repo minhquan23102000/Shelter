@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Shelter.Backdrop"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingTop="100dp">
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/your_favourite_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/your_favourite" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cast_a_wish_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wish_label" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/house_helper_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/house_helper" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/shelter_statistics_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shelter_statistics" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/recommend_house_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/house_recommender" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/feedback_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feedback" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/privacy_terms"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Privacy terms" />
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="1dp"
+        android:layout_margin="16dp"
+        android:background="?android:attr/textColorPrimary" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/my_account_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/account_label" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sign_out_menu"
+        style="@style/Widget.Shelter.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out" />
+</LinearLayout>
