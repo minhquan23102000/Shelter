@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
+
 import com.bumptech.glide.Glide;
 import com.example.shelter.R;
 import com.google.firebase.storage.StorageReference;
@@ -20,6 +22,14 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     private Context context;
     private List<StorageReference> mSliderItems;
     private boolean canDeleteItem = false;
+    private boolean isItemsChange = false;
+
+    //Loading animation
+    CircularProgressDrawable loadingAnimation;
+
+    public boolean isItemsChange() {
+        return isItemsChange;
+    }
 
     public List<StorageReference> getSliderItems() {
         return mSliderItems;
@@ -50,17 +60,20 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
 
     public void renewItems(List<StorageReference> sliderItems) {
         this.mSliderItems = sliderItems;
+        isItemsChange = true;
         notifyDataSetChanged();
     }
 
     public void deleteItem(int position) {
         this.mSliderItems.remove(position);
+        isItemsChange = true;
         notifyDataSetChanged();
     }
 
 
     public void addItem(StorageReference sliderItem) {
         this.mSliderItems.add(sliderItem);
+        isItemsChange = true;
         notifyDataSetChanged();
     }
 
@@ -68,12 +81,21 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
         if (mSliderItems != null) {
             this.mSliderItems.addAll(mSliderItems);
             notifyDataSetChanged();
+            isItemsChange = true;
         }
+    }
+
+    public void clearItems() {
+        this.mSliderItems = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
     public ImageSliderAdapterVH onCreateViewHolder(ViewGroup parent) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_slider_item_layout, null);
+        loadingAnimation = new CircularProgressDrawable(parent.getContext());
+        loadingAnimation.setStrokeWidth(5f);
+        loadingAnimation.setCenterRadius(30f);
         return new ImageSliderAdapterVH(inflate);
     }
 
@@ -81,9 +103,10 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     @Override
     public void onBindViewHolder(ImageSliderAdapterVH viewHolder, final int position) {
         StorageReference sliderItem = mSliderItems.get(position);
-
+        loadingAnimation.start();
         Glide.with(viewHolder.itemView)
                 .load(sliderItem)
+                .placeholder(loadingAnimation)
                 .fitCenter()
                 .into(viewHolder.imageViewBackground);
 
