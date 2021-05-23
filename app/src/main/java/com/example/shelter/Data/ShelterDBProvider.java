@@ -222,14 +222,6 @@ public class ShelterDBProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri goInsert(Uri uri, ContentValues values, String table_name) {
-        // Check if data is valid
-        if (table_name.equals(HouseEntry.TABLE_NAME)) {
-            isValidHouseValue(values);
-        } else if (table_name.equals(UserEntry.TABLE_NAME)) {
-            //We already check valid in UI so do not need to check here anymore
-            //isValidUserValue(values);
-        }
-
 
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -242,7 +234,6 @@ public class ShelterDBProvider extends ContentProvider {
             return null;
         }
 
-        database.close();
         // Notify all listeners that the data has changed for the HOUSE content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
@@ -323,7 +314,6 @@ public class ShelterDBProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        database.close();
         // Return the number of rows updated
         return rowsUpdated;
     }
@@ -381,7 +371,6 @@ public class ShelterDBProvider extends ContentProvider {
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        database.close();
         // Return the number of rows deleted
         return rowsDeleted;
     }
@@ -415,7 +404,7 @@ public class ShelterDBProvider extends ContentProvider {
     boolean isValidHouseValue(ContentValues values) {
         if (values.containsKey(HouseEntry.COLUMN_HOUSE_NAME)) {
             String name = values.getAsString(HouseEntry.COLUMN_HOUSE_NAME);
-            if (name == null || name == "") {
+            if (name == null || name.equals("")) {
                 throw new IllegalArgumentException("House requires a name");
             }
         }

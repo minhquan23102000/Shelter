@@ -201,7 +201,7 @@ public class ShelterDBContract {
         public static final int NEAR_MALL = 5;
 
         public static final String[] POSSIBLE_VALUE_PLACES = {
-                "Any",
+                "Khác",
                 "Gần sông",
                 "Trong hẻm",
                 "Cạnh Đường",
@@ -227,6 +227,7 @@ public class ShelterDBContract {
         public final static String COLUMN_HOUSE_STATE = "state";
         public final static int STATE_VISIBLE = 1;
         public final static int STATE_INVISIBLE = 0;
+        public final static int STATE_ABANDONED = -1;
 
         public static String getPlaceName(int place) {
             switch (place) {
@@ -246,10 +247,7 @@ public class ShelterDBContract {
         }
 
         public static boolean isValidPlace(int place) {
-            if (place >= 1 && place <= 5) {
-                return true;
-            }
-            return false;
+            return place >= 1 && place <= 5;
         }
 
 
@@ -378,14 +376,14 @@ public class ShelterDBContract {
                 MessageDigest digest = java.security.MessageDigest
                         .getInstance(MD5);
                 digest.update(s.getBytes());
-                byte messageDigest[] = digest.digest();
+                byte[] messageDigest = digest.digest();
 
                 // Create Hex String
                 StringBuilder hexString = new StringBuilder();
                 for (byte aMessageDigest : messageDigest) {
-                    String h = Integer.toHexString(0xFF & aMessageDigest);
+                    StringBuilder h = new StringBuilder(Integer.toHexString(0xFF & aMessageDigest));
                     while (h.length() < 2)
-                        h = "0" + h;
+                        h.insert(0, "0");
                     hexString.append(h);
                 }
                 return hexString.toString();
@@ -397,18 +395,15 @@ public class ShelterDBContract {
         }
 
         public static boolean isValidGender(int gender) {
-            if (gender >= 0 && gender <= 2) {
-                return true;
-            }
-            return false;
+            return gender >= 0 && gender <= 2;
         }
 
         public static boolean checkIfIsExists(String data, String column, Context context) {
-            if (data == null || data == "" || data.length() == 0) {
+            if (data == null || data.equals("") || data.length() == 0) {
                 return false;
             }
 
-            if (column == COLUMN_USER_PASSWORD) {
+            if (column.equals(COLUMN_USER_PASSWORD)) {
                 data = md5Crypt(data);
             }
             Cursor cursor = null;
@@ -422,14 +417,14 @@ public class ShelterDBContract {
         }
 
         public static boolean checkIfIsExists(String data, String column, Context context, Uri[] uri) {
-            if (data == null || data == "" || data.length() == 0) {
+            if (data == null || data.equals("") || data.length() == 0) {
                 return false;
             }
-            if (column == COLUMN_USER_PASSWORD) {
+            if (column.equals(COLUMN_USER_PASSWORD)) {
                 data = md5Crypt(data);
             }
 
-            Cursor cursor = null;
+            Cursor cursor;
             ShelterDBHelper dbHelper = new ShelterDBHelper(context);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             String[] selectionArgs = new String[]{data};
@@ -440,7 +435,7 @@ public class ShelterDBContract {
             }
             db.close();
             dbHelper.close();
-            return cursor != null && cursor.moveToFirst();
+            return cursor.moveToFirst();
         }
 
         static public boolean isPasswordValid(@Nullable Editable text) {
@@ -471,7 +466,7 @@ public class ShelterDBContract {
             try {
                 sdf.parse(dateStr);
                 int currentYear = Year.now().getValue();
-                String str[] = dateStr.split("/");
+                String[] str = dateStr.split("/");
                 int year = Integer.parseInt(str[2]);
                 Log.d("SignUpFragment", "year_date_picker" + year);
                 if (year > currentYear - 8 || year < currentYear - 100) {
