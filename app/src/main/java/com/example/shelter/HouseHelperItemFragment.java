@@ -144,28 +144,6 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         sliderAdapter = new ImageSliderAdapter(getActivity(), true);
         tempRefs = new ArrayList<>();
 
-        //Init place adapter
-        placeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
-        //House type adapter
-        houseTypeList = new ArrayList<>();
-        Cursor houseTypeCursor = getContext().getContentResolver().query(HouseTypeEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
-
-        if (houseTypeCursor.moveToFirst()) {
-            do {
-                houseTypeList.add(houseTypeCursor.getString(houseTypeCursor.getColumnIndex(HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME)));
-            } while (houseTypeCursor.moveToNext());
-
-            String[] asArray = new String[houseTypeList.size()];
-            houseTypeList.toArray(asArray);
-            houseTypeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, asArray);
-
-        }
-        houseTypeCursor.close();
-
         // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
         someActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -211,13 +189,11 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         Bundle deliver;
         deliver = this.getArguments();
 
-        //Spiner
+        //Spinner
         placeText = view.findViewById(R.id.place_text);
         houseTypeText = view.findViewById(R.id.house_type_text);
 
-        //Set adapter for the spinner
-        placeText.setAdapter(placeAdapter);
-        houseTypeText.setAdapter(houseTypeAdapter);
+
 
         //First load is to check, if this fragment is first created and not by resume
         if (firstLoad) {
@@ -368,6 +344,32 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             houseTempLng = sessionManager.getHousePointLatLng().longitude;
         }
 
+
+        //Init place adapter
+        placeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
+        //House type adapter
+        houseTypeList = new ArrayList<>();
+        Cursor houseTypeCursor = getContext().getContentResolver().query(HouseTypeEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+
+        if (houseTypeCursor.moveToFirst()) {
+            do {
+                houseTypeList.add(houseTypeCursor.getString(houseTypeCursor.getColumnIndex(HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME)));
+            } while (houseTypeCursor.moveToNext());
+
+            String[] asArray = new String[houseTypeList.size()];
+            houseTypeList.toArray(asArray);
+            houseTypeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, asArray);
+
+        }
+        houseTypeCursor.close();
+
+        //Set adapter for the spinner
+        placeText.setAdapter(placeAdapter);
+        houseTypeText.setAdapter(houseTypeAdapter);
     }
 
     private void setUpToolbar(View view) {

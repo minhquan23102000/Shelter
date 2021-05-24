@@ -88,15 +88,12 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
         salePriceEditText = view.findViewById(R.id.sale_price_edit_text);
         wishfulPointEditText = view.findViewById(R.id.wishful_point_edit_text);
         wishfulPointInputLayout = view.findViewById(R.id.wishful_point_text_input);
-        placeText = view.findViewById(R.id.place_text);
+
         castYourWishButton = view.findViewById(R.id.next_button);
         backButton = view.findViewById(R.id.back_button);
 
-        //Set adapter for the spinner
-        placeAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
-        placeText.setText(placeAdapter.getItem(0), false);
-        placeText.setAdapter(placeAdapter);
 
+        placeText = view.findViewById(R.id.place_text);
         houseTypeText = view.findViewById(R.id.house_type_text);
         //we set its adapter later we query in database
 
@@ -128,9 +125,11 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
 
                     mapFragment.setArguments(deliver);
                     ((MainActivity) getActivity()).navigateTo(mapFragment, true);
+                    wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_clear_24);
                 } else {
                     sessionManager.clearWishfulPoint();
                     wishfulPointEditText.setText(null);
+                    wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_place_24);
                 }
             }
         });
@@ -263,6 +262,10 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
             wishfulPointEditText.setText(null);
             wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_place_24);
         }
+
+        //Set adapter for the spinner
+        placeAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
+        placeText.setAdapter(placeAdapter);
     }
 
     @NonNull
@@ -296,7 +299,6 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
                     String[] asArray = new String[houseTypeList.size()];
                     houseTypeList.toArray(asArray);
                     houseTypeAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, asArray);
-                    houseTypeText.setText(houseTypeAdapter.getItem(0), false);
                     houseTypeText.setAdapter(houseTypeAdapter);
                 }
                 break;
