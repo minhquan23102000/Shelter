@@ -108,6 +108,8 @@
     <string name="set_land_mark_tower_default_location">Unable to get your location, we set LandMark Tower at default location</string>
     <string name="this_place_need_an_address">This place need an address</string>
     <string name="check_year_built_house"><![CDATA[\"Invalid year. Year should be > 1960 and < \"]]></string>
+    <string name="default_value_place">Khác</string>
+    <string name="default_value_house_type">Nhà trọ</string>
 
 
 </resources>
