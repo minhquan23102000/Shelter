@@ -137,6 +137,7 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
                         HouseEntry.COLUMN_HOUSE_STATE
                 };
                 selection = HouseEntry._ID + " in (" + TextUtils.join(",", parameterFavouriteQuery) + ")";
+                selection += " AND " + HouseEntry.COLUMN_HOUSE_STATE + " != " + HouseEntry.STATE_TRUE_DEATH;
                 selectionArgs = houseFavouriteID.toArray(new String[houseFavouriteID.size()]);
 
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context

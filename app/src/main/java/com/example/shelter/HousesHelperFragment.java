@@ -145,6 +145,7 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
                 selection = selection.replace("[", "(");
                 selection = selection.replace("]", ")");
                 selection = HouseEntry._ID + " IN " + selection;
+                selection += " AND " + HouseEntry.COLUMN_HOUSE_STATE + " != " + HouseEntry.STATE_TRUE_DEATH;
                 Log.d(TAG, "onCreateLoader: GET_DATA_HOUSES selection: " + selection);
 
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context

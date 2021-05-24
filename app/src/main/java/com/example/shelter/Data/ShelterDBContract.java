@@ -209,25 +209,21 @@ public class ShelterDBContract {
                 "Gần siêu thị"
         };
 
-        /**
-         * Count Number Images the house has on the cloud
-         * <p>
-         * Type: INT
-         */
-        public final static String COLUMN_HOUSE_COUNT_IMAGES = "num_house_image";
+
 
         /**
          * State of this house in database
          * Possible value for state
          * STATE_VISIBLE = 1
-         * STATE_INVISIBLE = 0
+         * STATE_ABANDONED = 0
+         * STATE_TRUE_DEATH = -1
          * <p>
          * Type: INT
          */
         public final static String COLUMN_HOUSE_STATE = "state";
         public final static int STATE_VISIBLE = 1;
-        public final static int STATE_INVISIBLE = 0;
-        public final static int STATE_ABANDONED = -1;
+        public final static int STATE_ABANDONED = 0;
+        public final static int STATE_TRUE_DEATH = -1;
 
         public static String getPlaceName(int place) {
             switch (place) {

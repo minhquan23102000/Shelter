@@ -37,6 +37,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NavigationHost {
@@ -193,4 +194,6 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
             Log.d("Provider Disabled", provider);
         }
     };
+
+
 }

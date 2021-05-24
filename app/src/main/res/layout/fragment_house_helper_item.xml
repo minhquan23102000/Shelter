@@ -56,6 +56,14 @@
                     app:sliderScrollTimeInSec="2"
                     app:sliderStartAutoCycle="true" />
 
+                <ImageView
+                    android:id="@+id/house_close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/outline_do_disturb_24"
+                    android:visibility="gone"
+                    />
 
                 <ImageButton
                     android:id="@+id/add_image"
@@ -126,7 +134,7 @@
                         style="@style/Widget.Shelter.DropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/default_value_house_type"
+                        android:hint="@string/house_type"
                         app:errorEnabled="true">
 
                         <AutoCompleteTextView
@@ -135,6 +143,7 @@
                             android:layout_height="wrap_content"
                             android:enabled="false"
                             android:inputType="none"
+                            android:text="@string/default_value_house_type"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 

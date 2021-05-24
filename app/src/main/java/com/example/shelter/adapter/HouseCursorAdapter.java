@@ -105,10 +105,6 @@ public class HouseCursorAdapter extends CursorAdapter {
             distanceTextView.setText(R.string.unlocatable);
         }
 
-        int image_counts = cursor.getInt(cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_COUNT_IMAGES));
-        //generateImageStoreFireBase(cursor.getInt(_idColumnIndex), image_counts);
-
-
     }
 
 

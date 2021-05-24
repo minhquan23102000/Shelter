@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_edit"
-        android:icon="@drawable/outline_edit_24"
-        android:title="@string/edit"
+        android:id="@+id/action_open"
+        android:icon="@drawable/outline_preview_24"
+        android:title="Open"
         app:showAsAction="ifRoom" />
 
     <item

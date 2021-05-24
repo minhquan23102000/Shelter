@@ -68,11 +68,14 @@ public class ImageRequester {
 
     public void loadHeaderImage(int _id, String table_name, ImageView imageView) {
 
-        imageNameGenerator.getImageHeaderName(table_name, _id, (FirebaseCallBack<String>) items -> {
-            StorageReference refTemp = storage.getReference().child(IMAGE_FOLDER).child(items.get(0));
-            Glide.with(mContext)
-                    .load(refTemp)
-                    .into(imageView);
+        imageNameGenerator.getImageHeaderName(table_name, _id, new FirebaseCallBack<String>() {
+            @Override
+            public void onCallBack(List<String> items) {
+                StorageReference refTemp = storage.getReference().child(IMAGE_FOLDER).child(items.get(0));
+                Glide.with(mContext)
+                        .load(refTemp)
+                        .into(imageView);
+            }
         });
 
     }
@@ -80,14 +83,17 @@ public class ImageRequester {
     public void loadListRefToSliderAdapter(int _id, String table_name,
                                            ImageSliderAdapter imageSliderAdapter, SliderView sliderView) {
 
-        imageNameGenerator.getCollectionOfImageNames(table_name, _id, (FirebaseCallBack<String>) items -> {
-            List<StorageReference> lstRef = new ArrayList<>();
-            for (String item: items) {
-                StorageReference refTemp = storage.getReference().child(IMAGE_FOLDER).child(item);
-                lstRef.add(refTemp);
+        imageNameGenerator.getCollectionOfImageNames(table_name, _id, new FirebaseCallBack<String>() {
+            @Override
+            public void onCallBack(List<String> items) {
+                List<StorageReference> lstRef = new ArrayList<>();
+                for (String item : items) {
+                    StorageReference refTemp = storage.getReference().child(IMAGE_FOLDER).child(item);
+                    lstRef.add(refTemp);
+                }
+                imageSliderAdapter.renewItems(lstRef);
+                sliderView.setInfiniteAdapterEnabled(true);
             }
-            imageSliderAdapter.renewItems(lstRef);
-            sliderView.setInfiniteAdapterEnabled(true);
         });
 
     }

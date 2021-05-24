@@ -39,7 +39,6 @@ public class ShelterDBHelper extends SQLiteAssetHelper {
     public ShelterDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
-
     }
 
 
@@ -84,6 +83,17 @@ public class ShelterDBHelper extends SQLiteAssetHelper {
         String updateQuery = "UPDATE " + table
                             + " SET " + column + " = " + column + " + 1"
                             + " WHERE _id = " + id;
+        database.execSQL(updateQuery);
+        database.close();
+        dbHelper.close();
+    }
+
+    public static void updateHouseState(int id, int state, Context context) {
+        ShelterDBHelper dbHelper = new ShelterDBHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        String updateQuery = "UPDATE " + HouseEntry.TABLE_NAME
+                + " SET " + HouseEntry.COLUMN_HOUSE_STATE + " = " + state
+                + " WHERE _id = " + id;
         database.execSQL(updateQuery);
         database.close();
         dbHelper.close();

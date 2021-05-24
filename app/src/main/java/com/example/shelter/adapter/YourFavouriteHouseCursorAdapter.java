@@ -117,6 +117,8 @@ public class YourFavouriteHouseCursorAdapter extends CursorAdapter {
 
         if (cursor.getInt(cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_STATE)) == HouseEntry.STATE_VISIBLE) {
             closedHouseItem.setVisibility(View.INVISIBLE);
+        } else {
+            closedHouseItem.setVisibility(View.VISIBLE);
         }
     }
 

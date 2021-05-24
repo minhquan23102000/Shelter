@@ -109,7 +109,9 @@
     <string name="this_place_need_an_address">This place need an address</string>
     <string name="check_year_built_house"><![CDATA[\"Invalid year. Year should be > 1960 and < \"]]></string>
     <string name="default_value_place">Khác</string>
-    <string name="default_value_house_type">Nhà trọ</string>
+    <string name="default_value_house_type">Nhà Trọ</string>
+    <string name="close_house_dialog">Are you sure want to close this house? If yes, then this house will close in 30 days. After that it will delete automatically. Latter if you want to open this house again, make sure you do before that happens.</string>
+    <string name="open_house_dialog">This house will be opened to the viewers and buyers?</string>
 
 
 </resources>

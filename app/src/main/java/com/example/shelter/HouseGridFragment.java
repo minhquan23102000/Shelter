@@ -311,7 +311,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                         HouseEntry.COLUMN_HOUSE_LATITUDE,
                         HouseEntry.COLUMN_HOUSE_LONGITUDE,
                         HouseEntry.COLUMN_HOUSE_ADDRESS,
-                        HouseEntry.COLUMN_HOUSE_COUNT_IMAGES,
                         HouseEntry.COLUMN_HOUSE_TYPE_ID};
 
                 String selectionForSearch = null;
