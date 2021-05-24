@@ -70,21 +70,18 @@ public class MapsFragment extends Fragment {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastMarkerLatLng,17));
 
             //Set on map click
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(@NonNull LatLng latLng) {
-                    //If father fragment is House Detail Fragment then set on map click able = false
-                    if (!fatherContext.equals(HouseDetailFragment.TAG)) {
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.title(latLng.latitude + ", " + latLng.longitude);
-                        mMap.clear();
-                        mMap.addMarker(markerOptions);
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-                        lastMarkerLatLng = latLng;
-                    }
-
+            mMap.setOnMapClickListener(latLng -> {
+                //If father fragment is House Detail Fragment then set on map click able = false
+                if (!fatherContext.equals(HouseDetailFragment.TAG)) {
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    markerOptions.title(latLng.latitude + ", " + latLng.longitude);
+                    mMap.clear();
+                    mMap.addMarker(markerOptions);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
+                    lastMarkerLatLng = latLng;
                 }
+
             });
         }
 
@@ -105,19 +102,27 @@ public class MapsFragment extends Fragment {
             lastMarkerLatLng = new LatLng(deliver.getDouble("pointLatitude", LAND_MARK_TOWER.latitude),
                     deliver.getDouble("pointLongitude", LAND_MARK_TOWER.longitude));
         } else {
-            throw new NullPointerException("The deliver is null");
+            throw new NullPointerException("The deliver to map fragment is is null");
         }
 
 
         hereButton = view.findViewById(R.id.here);
         wishPointNameEditText = view.findViewById(R.id.wish_point_name_edit_text);
         wishPointNameInputLayout = view.findViewById(R.id.wish_point_name_text_input);
+
+        //Expression of map fragment for house detail fragment
         if (fatherContext.equals(HouseDetailFragment.TAG)) {
             hereButton.setVisibility(View.GONE);
             wishPointNameInputLayout.setVisibility(View.GONE);
             wishPointNameEditText.setVisibility(View.GONE);
         }
 
+        //Expression of map fragment for house helper item fragment
+
+        if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
+            wishPointNameInputLayout.setHint(getContext().getString(R.string.address));
+            wishPointNameInputLayout.setPlaceholderText(null);
+        }
 
         return view;
     }
@@ -176,27 +181,39 @@ public class MapsFragment extends Fragment {
         });
 
         //Set locate button click
-        hereButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        hereButton.setOnClickListener(v -> {
+
+
+            if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
+                if (wishPointNameEditText.getText().length() == 0 || wishPointNameEditText.getText() == null) {
+                    Toast.makeText(getContext(), R.string.this_place_need_an_address, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    lastMarkerName = wishPointNameEditText.getText().toString();
+                    sessionManager.storeHousePointData(lastMarkerLatLng, lastMarkerName);
+                    getParentFragmentManager().popBackStackImmediate();
+                }
+            }
+
+
+            //Expression when click here button for cast wish fragment
+            if (fatherContext.equals(CastAWishFragment.TAG)) {
                 if (wishPointNameEditText.getText().length() == 0 || wishPointNameEditText.getText() == null) {
                     Toast.makeText(getContext(), R.string.this_place_need_a_name, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     lastMarkerName = wishPointNameEditText.getText().toString();
                     sessionManager.storeWishfulPoint(lastMarkerLatLng, lastMarkerName);
-                    getFragmentManager().popBackStackImmediate();
+                    getParentFragmentManager().popBackStackImmediate();
                 }
-
             }
+
+
         });
 
 
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable  Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+
 }

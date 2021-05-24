@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import com.bumptech.glide.Glide;
+import com.example.shelter.Network.ImageRequester;
 import com.example.shelter.R;
 import com.google.firebase.storage.StorageReference;
 import com.smarteist.autoimageslider.SliderViewAdapter;
@@ -20,9 +21,17 @@ import java.util.List;
 public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.ImageSliderAdapterVH> {
 
     private Context context;
-    private List<StorageReference> mSliderItems;
-    private boolean canDeleteItem = false;
+    private boolean canEditItems = false;
     private boolean isItemsChange = false;
+
+    //ImageRequester to handle delete items
+    ImageRequester imageRequester;
+
+
+    //List item that is delete
+    private List<StorageReference> abandonRefs;
+    //List item that display to layout
+    private List<StorageReference> mSliderItems;
 
     //Loading animation
     CircularProgressDrawable loadingAnimation;
@@ -31,32 +40,33 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
         return isItemsChange;
     }
 
+
     public List<StorageReference> getSliderItems() {
         return mSliderItems;
+    }
+
+    public List<StorageReference> getAbandonRefs() {
+        return abandonRefs;
     }
 
     public ImageSliderAdapter(Context context) {
         this.context = context;
         mSliderItems = new ArrayList<>();
+        imageRequester = new ImageRequester(context);
     }
 
-    public ImageSliderAdapter(Context context, boolean canDeleteItem) {
+    public ImageSliderAdapter(Context context, boolean canEditItems) {
+
+        //Normal setting
         this.context = context;
         mSliderItems = new ArrayList<>();
-        this.canDeleteItem = canDeleteItem;
+        imageRequester = new ImageRequester(context);
+
+        //Can edit setting
+        abandonRefs = new ArrayList<>();
+        this.canEditItems = canEditItems;
     }
 
-    public ImageSliderAdapter(Context context, List<StorageReference> sliderItems) {
-        this.context = context;
-        mSliderItems = sliderItems;
-
-    }
-
-    public ImageSliderAdapter(Context context, List<StorageReference> sliderItems, boolean canDeleteItem) {
-        this.context = context;
-        mSliderItems = sliderItems;
-        this.canDeleteItem = canDeleteItem;
-    }
 
     public void renewItems(List<StorageReference> sliderItems) {
         this.mSliderItems = sliderItems;
@@ -65,6 +75,7 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     }
 
     public void deleteItem(int position) {
+        abandonRefs.add(mSliderItems.get(position));
         this.mSliderItems.remove(position);
         isItemsChange = true;
         notifyDataSetChanged();
@@ -110,9 +121,8 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
                 .fitCenter()
                 .into(viewHolder.imageViewBackground);
 
-        viewHolder.deleteItem.setOnClickListener(v -> {
-            deleteItem(position);
-        });
+        viewHolder.deleteItem.setOnClickListener(v -> ImageSliderAdapter.this.deleteItem(position));
+
     }
 
     @Override
@@ -132,7 +142,7 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
             this.itemView = itemView;
             imageViewBackground = itemView.findViewById(R.id.image_slider_item);
             deleteItem = itemView.findViewById(R.id.delete_image_item);
-            if (canDeleteItem) {
+            if (canEditItems) {
                 deleteItem.setVisibility(View.VISIBLE);
             }
         }

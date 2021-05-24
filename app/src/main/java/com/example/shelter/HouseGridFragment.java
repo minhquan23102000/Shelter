@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -33,11 +34,17 @@ import com.example.shelter.Data.ShelterDBContract;
 import com.example.shelter.Data.ShelterDBContract.HouseEntry;
 import com.example.shelter.Data.ShelterDBHelper;
 import com.example.shelter.staggeredgridlayout.StaggeredHouseCardRecyclerViewAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.roacult.backdrop.BackdropLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HouseGridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     /**
@@ -92,9 +99,12 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private String sortOrder = null;
 
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
     }
 
@@ -207,7 +217,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
 
         toolbar.inflateMenu(R.menu.shr_toolbar_menu);
-        toolbar.setOverflowIcon(getContext().getDrawable(R.drawable.shr_filter));
+        toolbar.setOverflowIcon(AppCompatResources.getDrawable(getContext(), R.drawable.shr_filter));
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -301,6 +311,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                         HouseEntry.COLUMN_HOUSE_LATITUDE,
                         HouseEntry.COLUMN_HOUSE_LONGITUDE,
                         HouseEntry.COLUMN_HOUSE_ADDRESS,
+                        HouseEntry.COLUMN_HOUSE_COUNT_IMAGES,
                         HouseEntry.COLUMN_HOUSE_TYPE_ID};
 
                 String selectionForSearch = null;
@@ -407,8 +418,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
 
-//                    if (selectionArgsForHouseLoader != null)
-//
 
                 } else {
                     emptyView.setVisibility(View.VISIBLE);
@@ -613,4 +622,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
         Log.d(TAG, "constructCastWishQuery: query: " + selectionForWishLoader + " --- data: + " + debugSelectionArgs);
     }
+
+
 }

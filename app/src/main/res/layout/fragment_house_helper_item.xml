@@ -56,11 +56,6 @@
                     app:sliderScrollTimeInSec="2"
                     app:sliderStartAutoCycle="true" />
 
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true" />
 
                 <ImageButton
                     android:id="@+id/add_image"
@@ -71,7 +66,7 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="12dp"
                     android:background="@null"
-                    android:src="@drawable/outline_add_a_photo_black_36" />
+                    android:src="@drawable/outline_add_a_photo_black_24" />
 
 
             </RelativeLayout>
@@ -122,6 +117,7 @@
                             android:layout_height="wrap_content"
                             android:enabled="false"
                             android:inputType="none"
+                            android:text="@string/default_value_place"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -130,7 +126,7 @@
                         style="@style/Widget.Shelter.DropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/house_type"
+                        android:hint="@string/default_value_house_type"
                         app:errorEnabled="true">
 
                         <AutoCompleteTextView

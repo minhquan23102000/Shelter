@@ -65,18 +65,14 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         sessionManager = new SessionManager(getContext());
 
         //Set close Fragment Listener
-        turnBackBT.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager().popBackStack();
-            }
-        });
+        turnBackBT.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        addAHouse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((NavigationHost) getActivity()).navigateTo(new HouseHelperItemFragment(), true);
-            }
+        addAHouse.setOnClickListener(v -> {
+            Bundle deliver = new Bundle();
+            deliver.putInt("houseId", -1);
+            HouseHelperItemFragment fragment = new HouseHelperItemFragment();
+            fragment.setArguments(deliver);
+            ((NavigationHost) getActivity()).navigateTo(fragment, true);
         });
 
         return view;
@@ -92,15 +88,12 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         houseListView.setAdapter(mCursorAdapter);
 
         //Set On Item click listener
-        houseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Bundle deliver = new Bundle();
-                deliver.putInt("houseId", (int)id);
-                HouseHelperItemFragment fragment = new HouseHelperItemFragment();
-                fragment.setArguments(deliver);
-                ((NavigationHost) getActivity()).navigateTo(fragment, true);
-            }
+        houseListView.setOnItemClickListener((parent, view1, position, id) -> {
+            Bundle deliver = new Bundle();
+            deliver.putInt("houseId", (int)id);
+            HouseHelperItemFragment fragment = new HouseHelperItemFragment();
+            fragment.setArguments(deliver);
+            ((NavigationHost) getActivity()).navigateTo(fragment, true);
         });
     }
 
@@ -117,7 +110,7 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         String[] projection;
         CursorLoader cursorLoader = null;
         String selection;
-        String selectionArgs[];
+        String[] selectionArgs;
         Long userId = ContentUris.parseId(sessionManager.getUserUri());
         switch (id) {
             case GET_LIST_HOUSES_OWNER_ID_LOADER:
@@ -175,11 +168,12 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
                     do {
                         housesOwnerID.add(data.getString(data.getColumnIndex(RatingEntry.COLUMN_HOUSE_ID)));
                     } while (data.moveToNext());
-                    LoaderManager.getInstance(this).initLoader(GET_DATA_HOUSES, null, this);
+                    LoaderManager.getInstance(this).restartLoader(GET_DATA_HOUSES, null, this);
                 }
                 break;
             case GET_DATA_HOUSES:
                 mCursorAdapter.swapCursor(data);
+                mCursorAdapter.notifyDataSetChanged();
                 break;
         }
     }
