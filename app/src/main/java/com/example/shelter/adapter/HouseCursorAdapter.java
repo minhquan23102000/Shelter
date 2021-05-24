@@ -25,6 +25,8 @@ public class HouseCursorAdapter extends CursorAdapter {
     private int layoutId;
     private Context context;
 
+
+
     public HouseCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
         this.context = context;
@@ -89,11 +91,9 @@ public class HouseCursorAdapter extends CursorAdapter {
         nameTextView.setText(name);
         areaTextView.setText(area);
         rentCostTextView.setText(rentCost);
-        //imageRequester.fetchImageIntoView(cursor.getInt(_idColumnIndex), HouseEntry.TABLE_NAME, houseImage);
-        //houseImage.setImageBitmap(arrHouseImages[(cursor.getPosition())]);
-        Glide.with(context)
-                .load(imageRequester.getRefHeaderImageOnCloud(cursor.getInt(_idColumnIndex), HouseEntry.TABLE_NAME))
-                .into(houseImage);
+
+        //Load image View From Cloud
+        imageRequester.loadHeaderImage(cursor.getInt(_idColumnIndex), HouseEntry.TABLE_NAME, houseImage);
 
 
         //Calculate and display distance between the pointer location and the house
@@ -105,8 +105,13 @@ public class HouseCursorAdapter extends CursorAdapter {
             distanceTextView.setText(R.string.unlocatable);
         }
 
+        int image_counts = cursor.getInt(cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_COUNT_IMAGES));
+        //generateImageStoreFireBase(cursor.getInt(_idColumnIndex), image_counts);
+
 
     }
+
+
 
 
 }

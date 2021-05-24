@@ -65,20 +65,30 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
     private TextView houseAreaTV;
     private ImageButton isFavouriteButton;
     private MaterialButton sendContactButton;
+
     private SliderView sliderView;
+    private ImageSliderAdapter imageSliderAdapter;
     private ImageRequester imageRequester;
-    private SessionManager sessionManager;
+
     private Cursor cursorIsFavourite = null;
+    private SessionManager sessionManager;
+
 
     //House location
     private LatLng houseLatLng;
+
+    @Override
+    public void onCreate(@Nullable  Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        imageRequester = new ImageRequester(getContext());
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.house_detail_fragment, container, false);
         bundle = this.getArguments();
-        mHouseUri = Uri.parse(bundle.getString("houseUri"));
+        mHouseUri = Uri.parse(bundle.getString("houseUri", null));
         Log.d(TAG, "House Uri: " + bundle.getString("houseUri"));
 
         //Find all needed view to display data
@@ -115,68 +125,56 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
 
 
         //Set on click listener for more info TV, for expandable
-        moreInfoTVLabel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!moreInfoTVIsExpanded) {
-                    moreInfoTV.setMaxLines(40);
-                    moreInfoTVLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.outline_expand_less_24, 0);
-                    moreInfoTVIsExpanded = true;
-                } else {
-                    moreInfoTV.setMaxLines(0);
-                    moreInfoTVLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.outline_expand_more_24, 0);
-                    moreInfoTVIsExpanded = false;
-                }
-
+        moreInfoTVLabel.setOnClickListener(v -> {
+            if (!moreInfoTVIsExpanded) {
+                moreInfoTV.setMaxLines(40);
+                moreInfoTVLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.outline_expand_less_24, 0);
+                moreInfoTVIsExpanded = true;
+            } else {
+                moreInfoTV.setMaxLines(0);
+                moreInfoTVLabel.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.outline_expand_more_24, 0);
+                moreInfoTVIsExpanded = false;
             }
+
         });
 
         //Set on click listener for address text view to display current location of the house on google map
-        houseAddressLabelTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment mapFragment = new MapsFragment();
-                Bundle deliver = new Bundle();
-                deliver.putDouble("pointLatitude", houseLatLng.latitude);
-                deliver.putDouble("pointLongitude", houseLatLng.longitude);
-                mapFragment.setArguments(deliver);
-                ((NavigationHost) getActivity()).navigateTo(mapFragment, true);
-            }
+        houseAddressLabelTV.setOnClickListener(v -> {
+            Fragment mapFragment = new MapsFragment();
+            Bundle deliver = new Bundle();
+            deliver.putDouble("pointLatitude", houseLatLng.latitude);
+            deliver.putDouble("pointLongitude", houseLatLng.longitude);
+            mapFragment.setArguments(deliver);
+            ((NavigationHost) getActivity()).navigateTo(mapFragment, true);
         });
 
-        isFavouriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isFavourite) {
-                    isFavourite = false;
-                    isFavouriteButton.setImageResource(R.drawable.outline_favorite_border_24);
-                } else {
-                    isFavourite = true;
-                    isFavouriteButton.setImageResource(R.drawable.outline_favorite_24);
-                }
+        isFavouriteButton.setOnClickListener(v -> {
+            if (isFavourite) {
+                isFavourite = false;
+                isFavouriteButton.setImageResource(R.drawable.outline_favorite_border_24);
+            } else {
+                isFavourite = true;
+                isFavouriteButton.setImageResource(R.drawable.outline_favorite_24);
             }
         });
-        sendContactButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!contactSent) {
-                    Long userId = ContentUris.parseId(sessionManager.getUserUri());
-                    Long houseId = ContentUris.parseId(mHouseUri);
-                    ContentValues values = new ContentValues();
-                    values.put(RatingEntry.COLUMN_USER_ID, userId);
-                    values.put(RatingEntry.COLUMN_HOUSE_ID, houseId);
-                    values.put(RatingEntry.COLUMN_STARS, RatingEntry.SEND_CONTACT);
-                    values.put("topic_select", "1");
-                    getContext().getContentResolver().insert(RatingEntry.CONTENT_URI, values);
-                    sendContactButton.setText(R.string.contact_sent);
-                    sendContactButton.setBackgroundColor(getResources().getColor(R.color.colorAccent, null));
-                    contactSent = true;
-                    Toast.makeText(getContext(), R.string.send_contact_buton_press, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), R.string.contact_sent_press, Toast.LENGTH_SHORT).show();
-                }
-
+        sendContactButton.setOnClickListener(v -> {
+            if (!contactSent) {
+                Long userId = ContentUris.parseId(sessionManager.getUserUri());
+                Long houseId = ContentUris.parseId(mHouseUri);
+                ContentValues values = new ContentValues();
+                values.put(RatingEntry.COLUMN_USER_ID, userId);
+                values.put(RatingEntry.COLUMN_HOUSE_ID, houseId);
+                values.put(RatingEntry.COLUMN_STARS, RatingEntry.SEND_CONTACT);
+                values.put("topic_select", "1");
+                getContext().getContentResolver().insert(RatingEntry.CONTENT_URI, values);
+                sendContactButton.setText(R.string.contact_sent);
+                sendContactButton.setBackgroundColor(getResources().getColor(R.color.colorAccent, null));
+                contactSent = true;
+                Toast.makeText(getContext(), R.string.send_contact_buton_press, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), R.string.contact_sent_press, Toast.LENGTH_SHORT).show();
             }
+
         });
 
 
@@ -200,22 +198,10 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
         CursorLoader cursorLoader = null;
         String selection;
         String selectionArgs[];
-        Long userId = ContentUris.parseId(sessionManager.getUserUri());
-        Long houseId = ContentUris.parseId(mHouseUri);
+        long userId = ContentUris.parseId(sessionManager.getUserUri());
+        long houseId = ContentUris.parseId(mHouseUri);
         switch (id) {
             case HOUSE_DETAIL_LOADER:
-                projection = new String[]{
-                        HouseEntry._ID,
-                        HouseEntry.COLUMN_HOUSE_NAME,
-                        HouseEntry.COLUMN_HOUSE_AREA,
-                        HouseEntry.COLUMN_HOUSE_SALE_PRICE,
-                        HouseEntry.COLUMN_HOUSE_CONTENT,
-                        HouseEntry.COLUMN_HOUSE_ADDRESS,
-                        HouseEntry.COLUMN_HOUSE_RENT_COST,
-                        HouseEntry.COLUMN_HOUSE_LATITUDE,
-                        HouseEntry.COLUMN_HOUSE_LONGITUDE,
-                        HouseEntry.COLUMN_HOUSE_COUNT_IMAGES,
-                        HouseEntry.COLUMN_HOUSE_TYPE_ID};
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context
                         mHouseUri,   // Provider content URI to query
                         null,             // Columns to include in the resulting Cursor
@@ -231,7 +217,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                         RatingEntry.COLUMN_STARS
                 };
                 selection = "user_id = ? AND stars = ? AND house_id = ?";
-                selectionArgs = new String[]{userId.toString(), RatingEntry.FAVOURITE.toString(), houseId.toString()};
+                selectionArgs = new String[]{Long.toString(userId), RatingEntry.FAVOURITE.toString(), Long.toString(houseId)};
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
@@ -247,7 +233,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                         RatingEntry.COLUMN_STARS
                 };
                 selection = "user_id = ? AND stars = ? AND house_id = ?";
-                selectionArgs = new String[]{userId.toString(), RatingEntry.SEND_CONTACT.toString(), houseId.toString()};
+                selectionArgs = new String[]{Long.toString(userId), RatingEntry.SEND_CONTACT.toString(), Long.toString(houseId)};
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
@@ -292,7 +278,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                     //Query house type name
                     Integer houseType = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_TYPE_ID));
                     String houseTypeName;
-                    String projection[] = {HouseTypeEntry._ID, HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME};
+                    String[] projection = {HouseTypeEntry._ID, HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME};
                     Cursor houseTypeCursor = getContext().getContentResolver().query(ContentUris.withAppendedId(HouseTypeEntry.CONTENT_URI, houseType.longValue()),
                             projection,
                             null,
@@ -359,12 +345,21 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                     houseLatLng = new LatLng (data.getDouble(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_LATITUDE)),
                             data.getDouble(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_LONGITUDE)));
 
+                    //Init image adapter
+                    imageSliderAdapter = new ImageSliderAdapter(getContext());
+
+                    //Set adapter to slider view
+                    sliderView.setSliderAdapter(imageSliderAdapter);
+
+
                     //Load list house's images
-                    imageRequester = new ImageRequester(getContext());
-                    List<StorageReference> lstRefImage = imageRequester.getListRefImageOnCloud(data.getInt(data.getColumnIndex(HouseEntry._ID)),
-                            HouseEntry.TABLE_NAME, data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_COUNT_IMAGES)));
-                    //Set it to slider view
-                    sliderView.setSliderAdapter(new ImageSliderAdapter(getContext(), lstRefImage));
+                    imageRequester.loadListRefToSliderAdapter(data.getInt(data.getColumnIndex(HouseEntry._ID)),
+                            HouseEntry.TABLE_NAME,
+                            imageSliderAdapter,
+                            sliderView);
+
+
+
                     break;
                 case IS_FAVOURITE_LOADER:
                     isFavourite = true;
@@ -399,7 +394,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
             getContext().getContentResolver().insert(RatingEntry.CONTENT_URI, values);
         } else if (!isFavourite && cursorIsFavourite != null) {
             String selection = "user_id = ? AND stars = ? AND house_id = ?";
-            String selectionArgs[] = {userID.toString(), RatingEntry.FAVOURITE.toString(), houseID.toString()};
+            String[] selectionArgs = {userID.toString(), RatingEntry.FAVOURITE.toString(), houseID.toString()};
             getContext().getContentResolver().delete(RatingEntry.CONTENT_URI, selection, selectionArgs);
         }
         super.onDestroyView();

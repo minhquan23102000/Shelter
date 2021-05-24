@@ -22,8 +22,8 @@
     <string name="app_name">Shelter</string>
 
     <!-- Title text for the empty view, which describes the empty  house image [CHAR LIMIT=50] -->
-    <string name="empty_view_title_text">It\'s a bit cold here...</string>
-    <string name="empty_view_subtitle_text">... there are no shelter available</string>
+    <string name="empty_view_title_text">It\'s a bit cold here…</string>
+    <string name="empty_view_subtitle_text">… there are no shelter available</string>
     <string name="load_image_failure"> Error with loading image Uri</string>
     <string name="not_for_rent">Not rent</string>
     <string name="not_for_sale">Not sale</string>
@@ -105,6 +105,9 @@
     <string name="price_house_check">Please set sale price for the house</string>
     <string name="bed_rooms_house_check">Bed rooms must be not null</string>
     <string name="bath_rooms_house_check">Bath rooms must be not null</string>
+    <string name="set_land_mark_tower_default_location">Unable to get your location, we set LandMark Tower at default location</string>
+    <string name="this_place_need_an_address">This place need an address</string>
+    <string name="check_year_built_house"><![CDATA[\"Invalid year. Year should be > 1960 and < \"]]></string>
 
 
 </resources>

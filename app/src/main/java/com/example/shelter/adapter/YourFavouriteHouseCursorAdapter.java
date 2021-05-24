@@ -105,9 +105,7 @@ public class YourFavouriteHouseCursorAdapter extends CursorAdapter {
         favouriteHouseSalePriceTV.setText(salePrice);
 
         //Load House Image
-        Glide.with(context)
-                .load(imageRequester.getRefHeaderImageOnCloud(cursor.getInt(houseIdColumnIndex), HouseEntry.TABLE_NAME))
-                .into(favouriteHouseImageView);
+        imageRequester.loadHeaderImage(cursor.getInt(houseIdColumnIndex), HouseEntry.TABLE_NAME, favouriteHouseImageView);
 
         //Calculate and display distance between user's location and the house
         float distance = ShelterDBHelper.getDistanceFromHouseToThePointer(new SessionManager(context), cursor);
