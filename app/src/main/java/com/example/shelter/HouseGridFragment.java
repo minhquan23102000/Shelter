@@ -473,6 +473,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         //House Owner
         houseHelperMenu = (MaterialButton) view.findViewById(R.id.house_helper_menu);
         shelterStatisticMenu = (MaterialButton) view.findViewById(R.id.shelter_statistics_menu);
+        final MaterialButton contactManagerMenu = view.findViewById(R.id.contact_manager_menu);
 
 
         if (sessionManager.getUserRole() == ShelterDBContract.UserEntry.VIEWER) {
@@ -481,6 +482,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         } else {
             houseHelperMenu.setOnClickListener(this);
             shelterStatisticMenu.setOnClickListener(this);
+            contactManagerMenu.setOnClickListener(this);
         }
 
     }
@@ -503,6 +505,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
             ((NavigationHost) getActivity()).navigateTo(new CastAWishFragment(), true);
         } else if (id == R.id.house_helper_menu) {
             ((NavigationHost) getActivity()).navigateTo(new HousesHelperFragment(), true);
+        } else if (id == R.id.contact_manager_menu) {
+            ((NavigationHost) getActivity()).navigateTo(new ContactManagerFragment(), true);
         }
     }
 

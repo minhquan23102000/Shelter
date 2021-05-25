@@ -38,11 +38,11 @@
         android:text="@string/shelter_statistics" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/recommend_house_menu"
+        android:id="@+id/contact_manager_menu"
         style="@style/Widget.Shelter.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/house_recommender" />
+        android:text="@string/contacts_manager" />
 
 
     <com.google.android.material.button.MaterialButton

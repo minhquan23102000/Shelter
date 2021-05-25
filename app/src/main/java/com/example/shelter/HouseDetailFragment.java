@@ -232,8 +232,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                         RatingEntry.COLUMN_USER_ID,
                         RatingEntry.COLUMN_STARS
                 };
-                selection = "user_id = ? AND stars = ? AND house_id = ?";
-                selection += " " + HouseEntry.COLUMN_HOUSE_STATE + " == " + HouseEntry.STATE_VISIBLE;
+                selection = "user_id = ? AND (stars = ? OR stars = " + RatingEntry.CONTACT_SOLVED + ") AND house_id = ?";
                 selectionArgs = new String[]{Long.toString(userId), RatingEntry.SEND_CONTACT.toString(), Long.toString(houseId)};
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query

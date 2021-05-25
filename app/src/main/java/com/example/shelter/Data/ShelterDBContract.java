@@ -26,8 +26,7 @@ import java.util.regex.Pattern;
 
 public class ShelterDBContract {
 
-    private ShelterDBContract() {
-    }
+
 
     public static final String LOG_TAG = ShelterDBContract.class.getSimpleName();
     /**
@@ -562,10 +561,15 @@ public class ShelterDBContract {
 
         /**
          * Possible value for rating
+         * FAVOURITE = 20;
+         * HOUSE_OWNER = 30;
+         * SEND_CONTACT = 40;
+         * CONTACT_SOLVED = 50;
          */
         public final static Integer FAVOURITE = 20;
         public final static Integer HOUSE_OWNER = 30;
         public final static Integer SEND_CONTACT = 40;
+        public final static Integer CONTACT_SOLVED = 50;
 
 
 

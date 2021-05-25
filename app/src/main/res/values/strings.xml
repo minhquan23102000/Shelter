@@ -112,6 +112,12 @@
     <string name="default_value_house_type">Nhà Trọ</string>
     <string name="close_house_dialog">Are you sure want to close this house? If yes, then this house will close in 30 days. After that it will delete automatically. Latter if you want to open this house again, make sure you do before that happens.</string>
     <string name="open_house_dialog">This house will be opened to the viewers and buyers?</string>
+    <string name="contact_solve">SOLVE</string>
+    <string name="contact_solved">contacts solved</string>
+    <string name="contacts_alive">contacts alive</string>
+    <string name="delete_contact_warning">Do you want to delete this contact?</string>
+    <string name="contacts_manager">Contacts Manager</string>
+    <string name="solved">SOLVED</string>
 
 
 </resources>
