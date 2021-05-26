@@ -94,6 +94,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
         contactsListView = view.findViewById(R.id.contacts_list);
         listContactsAdapter = new ContactsAdapter(getContext(), null);
         contactsListView.setAdapter(listContactsAdapter);
+        contactsListView.setEmptyView(null);
 
         //Set event on item change for houseNameSpinner
 
@@ -243,9 +244,9 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 LoaderManager.getInstance(this).restartLoader(GET_LIST_USERS_ID_CONTACT_LOADER, null, this);
                 break;
             case GET_LIST_USERS_ID_CONTACT_LOADER:
+                usersContactId = new ArrayList<>();
+                contactIsSolved = new ArrayList<>();
                 if (data.moveToFirst()) {
-                    usersContactId = new ArrayList<>();
-                    contactIsSolved = new ArrayList<>();
                     do {
                         int ratingStar = data.getInt(data.getColumnIndex(RatingEntry.COLUMN_STARS));
                         if (ratingStar == RatingEntry.CONTACT_SOLVED) {
@@ -269,8 +270,8 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 break;
             case GET_LIST_USERS_DATA_LOADER:
                 listContactsAdapter.swapCursor(data);
-                listContactsAdapter.renewContactData(currentHouseId, contactIsSolved);
                 listContactsAdapter.notifyDataSetChanged();
+                listContactsAdapter.renewContactData(currentHouseId, contactIsSolved);
                 break;
 
         }

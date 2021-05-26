@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +114,9 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         FragmentTransaction transaction =
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.main_container, fragment);
+                        .setCustomAnimations(R.animator.enter_from_left, R.animator.exit_to_right, R.animator.enter_from_right, R.animator.exit_to_left)
+                .replace(R.id.main_container, fragment);
+
 
         if (addToBackstack) {
             transaction.addToBackStack(null);

@@ -156,11 +156,12 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
                         houseFavouriteID.add(data.getString(data.getColumnIndex(RatingEntry.COLUMN_HOUSE_ID)));
                         parameterFavouriteQuery.add("?");
                     } while (data.moveToNext());
-                    LoaderManager.getInstance(this).initLoader(GET_LIST_DATA_HOUSE_FAVOURITE_LOADER, null, this);
+                    LoaderManager.getInstance(this).restartLoader(GET_LIST_DATA_HOUSE_FAVOURITE_LOADER, null, this);
                 }
                 break;
             case GET_LIST_DATA_HOUSE_FAVOURITE_LOADER:
                 mCursorAdapter.swapCursor(data);
+                mCursorAdapter.notifyDataSetChanged();
                 break;
         }
     }
