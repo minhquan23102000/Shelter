@@ -23,7 +23,7 @@
 
     <!-- Title text for the empty view, which describes the empty  house image [CHAR LIMIT=50] -->
     <string name="empty_view_title_text">It\'s a bit cold here…</string>
-    <string name="empty_view_subtitle_text">… there are no shelter available</string>
+    <string name="empty_view_subtitle_text">… there are no shelter available for your wish</string>
     <string name="load_image_failure"> Error with loading image Uri</string>
     <string name="not_for_rent">Not rent</string>
     <string name="not_for_sale">Not sale</string>

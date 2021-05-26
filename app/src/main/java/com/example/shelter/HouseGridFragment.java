@@ -71,7 +71,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private SwipeRefreshLayout swipeRefreshLayout;
 
     //EmptyView
-    private TextView emptyView;
+    private View emptyView;
     //BackLayout Container
     private BackdropLayout backdropLayout;
     //Product Grid
