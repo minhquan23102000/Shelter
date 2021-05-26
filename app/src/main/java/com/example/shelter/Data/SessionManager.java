@@ -206,7 +206,7 @@ public class SessionManager {
     }
 
     public Integer getUserRole() {
-        Integer userRole = userSession.getInt(KEY_USER_ROLE, -1);
+        Integer userRole = userSession.getInt(KEY_USER_ROLE, 2);
         return userRole;
     }
     public boolean didUserLogin() {

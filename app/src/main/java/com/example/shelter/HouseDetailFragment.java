@@ -45,8 +45,8 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
     private static final int IS_FAVOURITE_LOADER = 121;
     private static final int CHECK_CONTACT_SENT = 131;
 
-    //Data needed for this fragment
-    private Bundle bundle;
+    static public final String KEY_HOUSE_URI = "houseUri";
+
     private Uri mHouseUri;
     private boolean moreInfoTVIsExpanded = false;
     private boolean isFavourite;
@@ -77,19 +77,32 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
     //House location
     private LatLng houseLatLng;
 
+    public static Fragment NewInstance(String houseUri) {
+        Bundle deliver = new Bundle();
+        deliver.putString(KEY_HOUSE_URI, houseUri);
+        Fragment newFragment = new HouseDetailFragment();
+        newFragment.setArguments(deliver);
+        return newFragment;
+    }
+
+
     @Override
     public void onCreate(@Nullable  Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         imageRequester = new ImageRequester(getContext());
+        if (getArguments() != null) {
+            mHouseUri = Uri.parse(getArguments().getString(KEY_HOUSE_URI, null));
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.house_detail_fragment, container, false);
-        bundle = this.getArguments();
-        mHouseUri = Uri.parse(bundle.getString("houseUri", null));
-        Log.d(TAG, "House Uri: " + bundle.getString("houseUri"));
+        //Data needed for this fragment
+//        Bundle bundle = this.getArguments();
+//        mHouseUri = Uri.parse(bundle.getString("houseUri", null));
+        Log.d(TAG, "House Uri: " + mHouseUri);
 
         //Find all needed view to display data
         houseNameTV = (TextView) view.findViewById(R.id.house_name);
@@ -140,11 +153,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
 
         //Set on click listener for address text view to display current location of the house on google map
         houseAddressLabelTV.setOnClickListener(v -> {
-            Fragment mapFragment = new MapsFragment();
-            Bundle deliver = new Bundle();
-            deliver.putDouble("pointLatitude", houseLatLng.latitude);
-            deliver.putDouble("pointLongitude", houseLatLng.longitude);
-            mapFragment.setArguments(deliver);
+            Fragment mapFragment = MapsFragment.NewInstance(HouseDetailFragment.TAG, houseLatLng.latitude, houseLatLng.longitude);
             ((NavigationHost) getActivity()).navigateTo(mapFragment, true);
         });
 

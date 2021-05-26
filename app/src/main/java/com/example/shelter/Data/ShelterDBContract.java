@@ -406,9 +406,12 @@ public class ShelterDBContract {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             String[] selectionArgs = new String[]{data};
             cursor = db.query(UserEntry.TABLE_NAME, new String[]{column}, column + "=?", selectionArgs, null, null, null);
+
+            boolean rs = cursor.moveToFirst();
+            cursor.close();
             db.close();
             dbHelper.close();
-            return cursor != null && cursor.moveToFirst();
+            return rs;
         }
 
         public static boolean checkIfIsExists(String data, String column, Context context, Uri[] uri) {
@@ -428,9 +431,11 @@ public class ShelterDBContract {
             if (cursor.moveToFirst()) {
                 uri[0] = ContentUris.withAppendedId(UserEntry.CONTENT_URI, cursor.getInt(cursor.getColumnIndex(_ID)));
             }
+            boolean rs = cursor.moveToFirst();
+            cursor.close();
             db.close();
             dbHelper.close();
-            return cursor.moveToFirst();
+            return rs;
         }
 
         static public boolean isPasswordValid(@Nullable Editable text) {

@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,41 +32,57 @@ import java.util.concurrent.TimeUnit;
 
 public class VerifyFragment extends Fragment {
     static final public String TAG = VerifyFragment.class.getSimpleName();
+    static final public String KEY_USER_PHONE = "userPhone";
+    static final public String KEY_PRE_FRAGMENT = "fragment";
+
     private String userPhone;
+    private String preFragmentTag = "";
     private String verificationCodeGenerated;
-    private MaterialButton verifyButton;
     private TextInputEditText verifyEditText;
     private TextInputLayout verifyInputLayout;
     private TextView timer;
-    private Bundle bundle;
     private SessionManager sessionManager;
     private boolean isVerify = false;
+
+    static public Fragment NewInstance(String userPhone, String preFragmentTag) {
+        Fragment newFragment = new VerifyFragment();
+        Bundle deliver = new Bundle();
+        deliver.putString(KEY_USER_PHONE, userPhone);
+        deliver.putString(KEY_PRE_FRAGMENT, preFragmentTag);
+        newFragment.setArguments(deliver);
+        return newFragment;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable  Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            userPhone = getArguments().getString(KEY_USER_PHONE, null);
+            preFragmentTag = getArguments().getString(KEY_PRE_FRAGMENT, null);
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.verify_phone_fragment, container, false);
-        bundle = this.getArguments();
-        userPhone = bundle.getString("userPhone");
-        verifyButton = view.findViewById(R.id.verify_button);
+        MaterialButton verifyButton = view.findViewById(R.id.verify_button);
         verifyEditText = view.findViewById(R.id.verify_edit_text);
         verifyInputLayout = view.findViewById(R.id.verify_text_input);
         sessionManager = new SessionManager(getContext());
         timer = view.findViewById(R.id.timer);
 
-        verifyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        verifyButton.setOnClickListener(view1 -> {
 
-                String code = verifyEditText.getText().toString();
+            String code = verifyEditText.getText().toString();
 
-                if (code.isEmpty() || code.length() < 6) {
-                    verifyInputLayout.setError("Wrong OTP...");
-                    verifyInputLayout.requestFocus();
-                    return;
-                }
-                verifyCode(code);
+            if (code.isEmpty() || code.length() < 6) {
+                verifyInputLayout.setError("Wrong OTP...");
+                verifyInputLayout.requestFocus();
+                return;
             }
+            verifyCode(code);
         });
 
         sendVerificationCodeToUser(userPhone);
@@ -90,7 +107,7 @@ public class VerifyFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                getActivity().getSupportFragmentManager().popBackStack();
+                getParentFragmentManager().popBackStack();
                 Toast.makeText(getContext(), R.string.verify_time_out, Toast.LENGTH_LONG).show();
             }
         }.start();
@@ -118,7 +135,7 @@ public class VerifyFragment extends Fragment {
             // for instance if the the phone number format is not valid.
             Log.w(TAG, "onVerificationFailed", e);
             Toast.makeText(getActivity(), getString(R.string.phone_is_not_valid), Toast.LENGTH_SHORT).show();
-            getActivity().getSupportFragmentManager().popBackStack();
+            getParentFragmentManager().popBackStack();
         }
 
         @Override
@@ -143,14 +160,14 @@ public class VerifyFragment extends Fragment {
                 if (task.isSuccessful()) {
                     isVerify = true;
                     //if this is my account fragment, then we navigate back to my account fragment
-                    if (bundle.getString("fragment", null).equals(MyAccountFragment.LOG_TAG)) {
+                    if (preFragmentTag.equals(MyAccountFragment.LOG_TAG)) {
                         sessionManager.setVerifyPhone(isVerify);
-                        getFragmentManager().popBackStack();
+                        getParentFragmentManager().popBackStack();
                     } else {
                         // if this is sign up fragment the nwe navigate to house grid fragment
                         Toast.makeText(getContext().getApplicationContext(), getString(R.string.sign_up_successfully), Toast.LENGTH_SHORT).show();
                         // Sign up successfully, pop all the fragment in backStack then navigate to HouseGridFragment
-                        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                         ((NavigationHost) getActivity()).navigateTo(new HouseGridFragment(), false);
                     }
 
@@ -164,7 +181,7 @@ public class VerifyFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        if (!isVerify && !bundle.getString("fragment", null).equals(MyAccountFragment.LOG_TAG)) {
+        if (!isVerify && !preFragmentTag.equals(MyAccountFragment.LOG_TAG)) {
             Uri userUri = sessionManager.getUserUri();
             if (userUri != null) {
                 //delete data and navigate back to sign up fragment

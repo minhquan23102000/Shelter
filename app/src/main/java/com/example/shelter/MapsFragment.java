@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,16 +33,23 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class MapsFragment extends Fragment {
     public static final String TAG = MapsFragment.class.getName();
     public static final LatLng LAND_MARK_TOWER = new LatLng(10.794890, 106.722113);
+    static public final String KEY_PRE_FRAGMENT = "fragment";
+    static public final String KEY_POINT_LAT = "pointLatitude";
+    static public final String KEY_POINT_LNG = "pointLongitude";
 
     private String lastMarkerName;
     private LatLng lastMarkerLatLng;
     private GoogleMap mMap;
-
+    private Geocoder geocoder;
 
     private SessionManager sessionManager;
     private String fatherContext;
@@ -80,13 +89,68 @@ public class MapsFragment extends Fragment {
                     mMap.addMarker(markerOptions);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                     lastMarkerLatLng = latLng;
+                    if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
+                        String address = getAddress(latLng);
+                        wishPointNameEditText.setText(address);
+                        lastMarkerName = address;
+                    }
                 }
 
             });
         }
 
+        private String getAddress(LatLng point) {
+            List<Address> addresses = new ArrayList<>();
+            try {
+                addresses = geocoder.getFromLocation(point.latitude, point.longitude,1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            android.location.Address address = addresses.get(0);
+            StringBuilder sb = new StringBuilder();
+            if (address != null) {
+                for (int i = 0; i < address.getMaxAddressLineIndex(); i++){
+                    sb.append(address.getAddressLine(i)).append(", ");
+                }
+                Log.d(TAG, "getAddress: " + sb.toString());
+                return sb.toString();
+            } else {
+                return null;
+            }
+
+
+        }
 
     };
+
+    static public Fragment NewInstance(String previousFragmentTag, double pointLat, double pointLng) {
+        Fragment newFragment = new MapsFragment();
+        Bundle deliver = new Bundle();
+        deliver.putString(KEY_PRE_FRAGMENT, previousFragmentTag);
+        deliver.putDouble(KEY_POINT_LAT, pointLat);
+        deliver.putDouble(KEY_POINT_LNG, pointLng);
+        newFragment.setArguments(deliver);
+        return newFragment;
+    }
+
+
+    @Override
+    public void onCreate(@Nullable  Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            //Get data from the deliver
+            fatherContext = getArguments().getString(KEY_PRE_FRAGMENT, HouseDetailFragment.TAG);
+            //Location Point on map has default value is Landmark tower 81
+            lastMarkerLatLng = new LatLng(getArguments().getDouble(KEY_POINT_LAT, LAND_MARK_TOWER.latitude),
+                    getArguments().getDouble(KEY_POINT_LNG, LAND_MARK_TOWER.longitude));
+            Log.d(TAG, "onCreate: latLng " + lastMarkerLatLng.toString());
+        } else {
+            throw new NullPointerException("The deliver to map fragment is is null");
+        }
+
+        geocoder = new Geocoder(getContext(), Locale.getDefault());
+    }
 
     @Nullable
     @Override
@@ -94,16 +158,6 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
-        Bundle deliver = this.getArguments();
-        if (deliver != null) {
-            //Get data from the deliver
-            fatherContext = deliver.getString("fragment", HouseDetailFragment.TAG);
-            //Location Point on map has default value is Landmark tower 81
-            lastMarkerLatLng = new LatLng(deliver.getDouble("pointLatitude", LAND_MARK_TOWER.latitude),
-                    deliver.getDouble("pointLongitude", LAND_MARK_TOWER.longitude));
-        } else {
-            throw new NullPointerException("The deliver to map fragment is is null");
-        }
 
 
         hereButton = view.findViewById(R.id.here);
@@ -118,7 +172,6 @@ public class MapsFragment extends Fragment {
         }
 
         //Expression of map fragment for house helper item fragment
-
         if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
             wishPointNameInputLayout.setHint(getContext().getString(R.string.address));
             wishPointNameInputLayout.setPlaceholderText(null);
@@ -136,7 +189,6 @@ public class MapsFragment extends Fragment {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
-
 
         }
 
@@ -159,7 +211,7 @@ public class MapsFragment extends Fragment {
 
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS));
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -170,7 +222,10 @@ public class MapsFragment extends Fragment {
                 mMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(place.getName()));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 17.0f));
                 lastMarkerLatLng = place.getLatLng();
-                Log.d(TAG, "Place: " + place.getName() + ", " + place.getId() + place.getLatLng());
+                if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
+                    lastMarkerName = place.getAddress();
+                    wishPointNameEditText.setText(place.getAddress());
+                }
             }
 
 
@@ -210,8 +265,6 @@ public class MapsFragment extends Fragment {
 
 
         });
-
-
 
     }
 

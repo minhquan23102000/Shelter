@@ -68,10 +68,7 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         turnBackBT.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         addAHouse.setOnClickListener(v -> {
-            Bundle deliver = new Bundle();
-            deliver.putInt("houseId", -1);
-            HouseHelperItemFragment fragment = new HouseHelperItemFragment();
-            fragment.setArguments(deliver);
+            Fragment fragment = HouseHelperItemFragment.NewInstance(-1);
             ((NavigationHost) getActivity()).navigateTo(fragment, true);
         });
 
@@ -89,11 +86,7 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
 
         //Set On Item click listener
         houseListView.setOnItemClickListener((parent, view1, position, id) -> {
-            Bundle deliver = new Bundle();
-            deliver.putInt("houseId", (int)id);
-            HouseHelperItemFragment fragment = new HouseHelperItemFragment();
-            fragment.setArguments(deliver);
-            ((NavigationHost) getActivity()).navigateTo(fragment, true);
+            ((NavigationHost) getActivity()).navigateTo(HouseHelperItemFragment.NewInstance((int)id), true);
         });
     }
 

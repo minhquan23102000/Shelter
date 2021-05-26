@@ -178,12 +178,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     //On House card click
     private void setItemOnClickListener() {
         listener = (v, position, id) -> {
-            Bundle bundle = new Bundle();
             String houseUri = ContentUris.withAppendedId(HouseEntry.CONTENT_URI, id).toString();
-            bundle.putString("houseUri", houseUri);
-            HouseDetailFragment fragment = new HouseDetailFragment();
-            fragment.setArguments(bundle);
-            ((NavigationHost) getActivity()).navigateTo(fragment, true);
+            ((NavigationHost) getActivity()).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
         };
 
     }

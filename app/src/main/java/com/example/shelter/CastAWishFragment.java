@@ -112,18 +112,16 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
                 //If session has not yet located wishfulPoint we navigate to MapFragment
                 //Else we clear it and set text to null
                 if (sessionManager.getWishfulPointName() == null) {
-                    Fragment mapFragment = new MapsFragment();
-                    Bundle deliver = new Bundle();
-                    deliver.putString("fragment", TAG);
+                   double latPoint, lngPoint;
                     try {
-                        deliver.putDouble("pointLatitude", MainActivity.getUserLocation().getLatitude());
-                        deliver.putDouble("pointLongitude", MainActivity.getUserLocation().getLongitude());
+                      latPoint = MainActivity.getUserLocation().getLatitude();
+                      lngPoint = MainActivity.getUserLocation().getLongitude();
                     } catch (NullPointerException e) {
-                        Toast.makeText(getContext(), R.string.unabale_to_locate_user_location, Toast.LENGTH_SHORT);
-                        return;
+                       latPoint = MapsFragment.LAND_MARK_TOWER.latitude;
+                       lngPoint = MapsFragment.LAND_MARK_TOWER.longitude;
                     }
+                    Fragment mapFragment = MapsFragment.NewInstance(CastAWishFragment.TAG, latPoint, lngPoint);
 
-                    mapFragment.setArguments(deliver);
                     ((MainActivity) getActivity()).navigateTo(mapFragment, true);
                     wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_clear_24);
                 } else {

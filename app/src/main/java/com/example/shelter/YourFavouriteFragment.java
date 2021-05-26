@@ -71,16 +71,9 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
 
 
         //Set Item click listener
-        favouriteHouseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Bundle bundle = new Bundle();
-                String houseUri = ContentUris.withAppendedId(HouseEntry.CONTENT_URI, id).toString();
-                bundle.putString("houseUri", houseUri);
-                HouseDetailFragment fragment = new HouseDetailFragment();
-                fragment.setArguments(bundle);
-                ((NavigationHost) getActivity()).navigateTo(fragment, true);
-            }
+        favouriteHouseListView.setOnItemClickListener((parent, view1, position, id) -> {
+            String houseUri = ContentUris.withAppendedId(HouseEntry.CONTENT_URI, id).toString();
+            ((NavigationHost) getActivity()).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
         });
 
         //Set close Fragment Listener

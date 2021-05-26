@@ -300,13 +300,7 @@ public class SignUpFragment extends Fragment {
             // Otherwise, the insertion was successful and we can navigate to verify Fragment
             SessionManager sessionManager = new SessionManager(getContext());
             sessionManager.initUserSession(phone, email, newUri.toString(), name, 2);
-
-            VerifyFragment toFragment = new VerifyFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("userPhone", phone);
-            bundle.putString("userUri", newUri.toString());
-            bundle.putString("fragment", LOG_TAG);
-            toFragment.setArguments(bundle);
+            Fragment toFragment = VerifyFragment.NewInstance(phone, LOG_TAG);
             ((NavigationHost) getActivity()).navigateTo(toFragment, true);
         }
     }

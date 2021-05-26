@@ -103,7 +103,7 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
 
         //Reset view for my account fragment
         nextButton.setText("CHANGE");
-        backButton.setText("UNCHANGE");
+        backButton.setText("REDO");
 
         confirmPasswordInputLayout.setVisibility(View.GONE);
         passwordInputLayout.setVisibility(View.GONE);
@@ -139,18 +139,15 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
 
         //Set item for the drop down menu
         autoCompleteTextView = view.findViewById(R.id.gender_menu);
-        genderAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, dropdownMenuItems);
+        genderAdapter = new ArrayAdapter<>(getContext(), R.layout.dropdown_menu, dropdownMenuItems);
         autoCompleteTextView.setText(genderAdapter.getItem(0), false);
         autoCompleteTextView.setAdapter(genderAdapter);
 
         setErrorInputCheck();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.detach(MyAccountFragment.this).attach(MyAccountFragment.this).commit();
-            }
+        backButton.setOnClickListener(v -> {
+            final FragmentTransaction ft = getParentFragmentManager().beginTransaction();
+            ft.detach(MyAccountFragment.this).attach(MyAccountFragment.this).commit();
         });
 
         return view;
@@ -288,11 +285,7 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
                     //If user input a new phone we navigate to verify fragment else we save account directly
                     if (!phoneString.equals(phoneInData) ) {
                         sessionManager.setVerifyPhone(false);
-                        VerifyFragment toFragment = new VerifyFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("userPhone", phoneString);
-                        bundle.putString("fragment", LOG_TAG);
-                        toFragment.setArguments(bundle);
+                        Fragment toFragment = VerifyFragment.NewInstance(phoneString, LOG_TAG);
                         ((NavigationHost) getActivity()).navigateTo(toFragment, true);
                     } else {
                         saveAccount();
@@ -369,7 +362,6 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
         values.put(UserEntry.COLUMN_USER_DATE_BIRTH, date_birth);
         values.put(UserEntry.COLUMN_USER_INCOME, income);
         values.put(UserEntry.COLUMN_USER_GENDER, gender);
-        values.put(UserEntry.COLUMN_USER_ROLE_ID, UserEntry.VIEWER);
 
 
         int row_effect = getContext().getContentResolver().update(sessionManager.getUserUri(), values, null, null);
@@ -382,9 +374,9 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
         } else {
             // Otherwise, the update was successful and we can update session and refresh layout
             SessionManager sessionManager = new SessionManager(getContext());
-            sessionManager.initUserSession(phone, email, sessionManager.getUserUri().toString(), name, income, date_birth, gender, UserEntry.VIEWER);
+            sessionManager.initUserSession(phone, email, sessionManager.getUserUri().toString(), name, income, date_birth, gender, sessionManager.getUserRole());
             Toast.makeText(getContext(), "Save successfully!", Toast.LENGTH_SHORT).show();
-            final FragmentTransaction ft = getFragmentManager().beginTransaction();
+            final FragmentTransaction ft = getParentFragmentManager().beginTransaction();
             ft.detach(MyAccountFragment.this).attach(MyAccountFragment.this).commit();
         }
         //set verify phone to false so it will not trigger again when this fragment resume

@@ -62,7 +62,7 @@ import java.util.List;
 public class HouseHelperItemFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String TAG = HouseHelperItemFragment.class.getName();
     private static final int HOUSE_DATA_LOADER = 349;
-
+    private static final String KEY_ARGUMENT_1 = "houseId";
     //Session manager
     private SessionManager sessionManager;
 
@@ -127,14 +127,24 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     private boolean firstLoad = true;
     private int houseState;
 
-    //On Key listener
-    private View.OnKeyListener onKeyListener;
-
+    static public Fragment NewInstance(int houseId) {
+        Fragment newFragment = new HouseHelperItemFragment();
+        Bundle deliver = new Bundle();
+        deliver.putInt(KEY_ARGUMENT_1, houseId);
+        newFragment.setArguments(deliver);
+        return newFragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        //Get argument
+        if (getArguments() != null) {
+            tempHouseId = getArguments().getInt(KEY_ARGUMENT_1, -1);
+        }
+
         //Init image requester
         imageRequester = new ImageRequester(getActivity());
         //Init image name handler
@@ -185,9 +195,6 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Init session manager
         sessionManager = new SessionManager(getContext());
 
-        //Get item from deliver
-        Bundle deliver;
-        deliver = this.getArguments();
 
         //Spinner
         placeText = view.findViewById(R.id.place_text);
@@ -197,11 +204,6 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
         //First load is to check, if this fragment is first created and not by resume
         if (firstLoad) {
-
-
-
-            //Get house id
-            tempHouseId = deliver.getInt("houseId", -1);
             //If temp house != -1 we kick the loader to fill data in UI. Else we insert a new house, so the data in UI will be blank.
             if (tempHouseId != -1) {
                 LoaderManager.getInstance(HouseHelperItemFragment.this).initLoader(HOUSE_DATA_LOADER, null, HouseHelperItemFragment.this);
@@ -319,17 +321,9 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Set on icon click listener for housePointEditText, to navigate to map fragment and get house location
         housePointInputLayout.setStartIconOnClickListener(v -> {
             toMapFragment = true;
-            Fragment mapFragment = new MapsFragment();
-            Bundle mapDeliver = new Bundle();
-            mapDeliver.putString("fragment", TAG);
-            mapDeliver.putDouble("pointLatitude", houseTempLat);
-            mapDeliver.putDouble("pointLongitude", houseTempLng);
-
-            mapFragment.setArguments(mapDeliver);
+            Fragment mapFragment = MapsFragment.NewInstance(TAG, houseTempLat, houseTempLng);
             ((MainActivity) getActivity()).navigateTo(mapFragment, true);
         });
-
-
 
 
         return view;
@@ -533,7 +527,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
 
     @Override
-    public void onDestroy() {
+    public void onStop() {
         //Update failed. This trigger when User quit the app when on map fragment or on Get image Intent, But data is not valid or not click update.
         if (!clickUpdateAndDataIsValid && (!toGetImage && !toMapFragment)) {
             //Update failed
@@ -545,7 +539,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             imageRequester.deleteAListOfRef(tempRefs);
         }
 
-        super.onDestroy();
+        super.onStop();
     }
 
     private void update() {
@@ -662,7 +656,8 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     private void checkDataValid() {
 
         //Set on key listener to clear error
-        onKeyListener = (v, keyCode, event) -> {
+        //On Key listener
+        View.OnKeyListener onKeyListener = (v, keyCode, event) -> {
             if (v.getId() == R.id.house_name_edit_text) {
                 houseNameInputLayout.setError(null);
             } else if (v.getId() == R.id.house_point_edit_text) {
