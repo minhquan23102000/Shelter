@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,6 +53,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.storage.StorageReference;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.time.YearMonth;
@@ -63,12 +66,17 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     public static final String TAG = HouseHelperItemFragment.class.getName();
     private static final int HOUSE_DATA_LOADER = 349;
     private static final String KEY_ARGUMENT_1 = "houseId";
+    
+    //Context and Activity
+    private Context mContext;
+    private Activity mActivity;
     //Session manager
     private SessionManager sessionManager;
 
     //Init intent launcher
-    ActivityResultLauncher<Intent> someActivityResultLauncher;
-
+    private ActivityResultLauncher<Intent> someActivityResultLauncher;
+    
+    
     //All view needed in layout
     //Views
     private TextInputEditText areaEditText;
@@ -98,12 +106,6 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
     private ArrayAdapter<String> placeAdapter;
     private ArrayAdapter<String> houseTypeAdapter;
-    private List<String> houseTypeList;
-
-    //Button
-    private ImageButton addImageBT;
-    private MaterialButton updateButton;
-    private MaterialButton redoButton;
 
     //Image Adapter
     private ImageSliderAdapter sliderAdapter;
@@ -139,6 +141,8 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mActivity = getActivity();
+        mContext = getContext();
 
         //Get argument
         if (getArguments() != null) {
@@ -146,12 +150,12 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         }
 
         //Init image requester
-        imageRequester = new ImageRequester(getActivity());
+        imageRequester = new ImageRequester(mActivity);
         //Init image name handler
-        imageNameGenerator = new ImageNameGenerator(getActivity());
+        imageNameGenerator = new ImageNameGenerator(mActivity);
 
         //Init adapter
-        sliderAdapter = new ImageSliderAdapter(getActivity(), true);
+        sliderAdapter = new ImageSliderAdapter(mActivity, true);
         tempRefs = new ArrayList<>();
 
         // You can do the assignment inside onAttach or onCreate, i.e, before the activity is displayed
@@ -161,6 +165,10 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         // There are no request codes
                         Intent data = result.getData();
+                        if (data == null) {
+                            return;
+                        }
+
                         ClipData clipDataUri = data.getClipData();
                         List<Uri> uriList = new ArrayList<>();
 
@@ -193,7 +201,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         setUpToolbar(view);
 
         //Init session manager
-        sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(mContext);
 
 
         //Spinner
@@ -214,7 +222,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                     houseTempLat = MainActivity.getUserLocation().getLatitude();
                     houseTempLng = MainActivity.getUserLocation().getLongitude();
                 } catch (NullPointerException e) {
-                    Toast.makeText(getContext(), R.string.set_land_mark_tower_default_location, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.set_land_mark_tower_default_location, Toast.LENGTH_LONG).show();
                     houseTempLat = MapsFragment.LAND_MARK_TOWER.latitude;
                     houseTempLng = MapsFragment.LAND_MARK_TOWER.longitude;
                 }
@@ -230,7 +238,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                 values.put(HouseEntry.COLUMN_HOUSE_FLOORS, 0);
                 values.put(HouseEntry.COLUMN_HOUSE_PLACE, 1);
                 values.put(HouseEntry.COLUMN_HOUSE_TYPE_ID, 1);
-                Uri newHouseUri = getContext().getContentResolver().insert(HouseEntry.CONTENT_URI, values);
+                Uri newHouseUri = mContext.getContentResolver().insert(HouseEntry.CONTENT_URI, values);
                 tempHouseId = (int) ContentUris.parseId(newHouseUri);
                 Log.d(TAG, "onCreateView: " + tempHouseId);
 
@@ -245,14 +253,18 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Init image slider
         sliderView = view.findViewById(R.id.image_slider);
         sliderView.setSliderAdapter(sliderAdapter);
+        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
+        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+        sliderView.setAutoCycle(true);
 
         //Init add Image Button, when on click, navigate to user gallery to pick images
-        addImageBT = view.findViewById(R.id.add_image);
+        //Button
+        ImageButton addImageBT = view.findViewById(R.id.add_image);
         addImageBT.setOnClickListener(v -> {
             toGetImage = true;
             if (ActivityCompat.checkSelfPermission(
-                    getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MainActivity.REQUEST_READ_EXTERNAl_FILE);
+                    mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MainActivity.REQUEST_READ_EXTERNAl_FILE);
             } else {
                 Intent pickImage = new Intent();
                 pickImage.setType("image/*");
@@ -264,14 +276,14 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
         //Init update button, when on click it will check all data is valid and destroy this layout.
         // The update statement will be triggered onDestroyView Event.
-        updateButton = view.findViewById(R.id.next_button);
+        MaterialButton updateButton = view.findViewById(R.id.next_button);
         updateButton.setOnClickListener(v -> {
             checkDataValid();
         });
 
 
         //Init redo button to redo change
-        redoButton = view.findViewById(R.id.back_button);
+        MaterialButton redoButton = view.findViewById(R.id.back_button);
         redoButton.setOnClickListener(v -> {
             Fragment fragment = new HouseHelperItemFragment();
             if (!isNewHouse) {
@@ -281,7 +293,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             }
 
             //Reload fragment
-            ((MainActivity) getActivity()).navigateTo(fragment, false);
+            ((MainActivity) mActivity).navigateTo(fragment, false);
         });
 
         //Find all needed view, prepare data for layout
@@ -322,7 +334,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         housePointInputLayout.setStartIconOnClickListener(v -> {
             toMapFragment = true;
             Fragment mapFragment = MapsFragment.NewInstance(TAG, houseTempLat, houseTempLng);
-            ((MainActivity) getActivity()).navigateTo(mapFragment, true);
+            ((MainActivity) mActivity).navigateTo(mapFragment, true);
         });
 
 
@@ -340,10 +352,10 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
 
         //Init place adapter
-        placeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
+        placeAdapter = new ArrayAdapter<>(mActivity, R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
         //House type adapter
-        houseTypeList = new ArrayList<>();
-        Cursor houseTypeCursor = getContext().getContentResolver().query(HouseTypeEntry.CONTENT_URI,
+        List<String> houseTypeList = new ArrayList<>();
+        Cursor houseTypeCursor = mContext.getContentResolver().query(HouseTypeEntry.CONTENT_URI,
                 null,
                 null,
                 null,
@@ -356,7 +368,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
             String[] asArray = new String[houseTypeList.size()];
             houseTypeList.toArray(asArray);
-            houseTypeAdapter = new ArrayAdapter<>(getActivity(), R.layout.dropdown_menu, asArray);
+            houseTypeAdapter = new ArrayAdapter<>(mActivity, R.layout.dropdown_menu, asArray);
 
         }
         houseTypeCursor.close();
@@ -368,7 +380,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
     private void setUpToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.app_bar);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) mActivity;
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
         }
@@ -378,7 +390,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_delete) {
                 if (houseState == HouseEntry.STATE_VISIBLE) {
-                   new MaterialAlertDialogBuilder(getContext())
+                   new MaterialAlertDialogBuilder(mContext)
                            .setMessage(R.string.close_house_dialog)
                            .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                                @Override
@@ -389,7 +401,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                @Override
                                public void onClick(DialogInterface dialog, int which) {
-                                   ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, getContext());
+                                   ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, mContext);
                                    houseCloseImage.setVisibility(View.VISIBLE);
                                    houseState = HouseEntry.STATE_ABANDONED;
                                }
@@ -399,13 +411,13 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
                 }
                 else {
-                    Toast.makeText(getContext(), "This house is already closed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "This house is already closed", Toast.LENGTH_SHORT).show();
                 }
             }
 
             else if (item.getItemId() == R.id.action_open) {
                 if (houseState == HouseEntry.STATE_ABANDONED) {
-                    new MaterialAlertDialogBuilder(getContext())
+                    new MaterialAlertDialogBuilder(mContext)
                             .setMessage(R.string.open_house_dialog)
                             .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                                 @Override
@@ -416,14 +428,14 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_VISIBLE, getContext());
+                                    ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_VISIBLE, mContext);
                                     houseCloseImage.setVisibility(View.GONE);
                                     houseState = HouseEntry.STATE_VISIBLE;
                                 }
                             })
                             .show();
                 } else {
-                    Toast.makeText(getContext(), "This house is already opened", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "This house is already opened", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -444,7 +456,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        return new CursorLoader(getContext(),
+        return new CursorLoader(mContext,
                 ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId),
                 null,
                 null,
@@ -510,7 +522,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         if (!clickUpdateAndDataIsValid && (!toGetImage && !toMapFragment)) {
             //Update failed
             if (isNewHouse) {
-                getContext().getContentResolver().delete(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId), null, null);
+                mContext.getContentResolver().delete(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId), null, null);
             }
             Log.d(TAG, "onDestroyView: update failed " + toMapFragment + toGetImage);
             //Update failed delete all the ref user inserted in
@@ -532,7 +544,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         if (!clickUpdateAndDataIsValid && (!toGetImage && !toMapFragment)) {
             //Update failed
             if (isNewHouse) {
-                getContext().getContentResolver().delete(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId), null, null);
+                mContext.getContentResolver().delete(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId), null, null);
             }
 
             //Update failed delete all the ref user inserted in
@@ -598,7 +610,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             ratingValues.put(RatingEntry.COLUMN_HOUSE_ID, tempHouseId);
             ratingValues.put(RatingEntry.COLUMN_USER_ID, ContentUris.parseId(sessionManager.getUserUri()));
             ratingValues.put(RatingEntry.COLUMN_STARS, RatingEntry.HOUSE_OWNER);
-            getContext().getContentResolver().insert(RatingEntry.CONTENT_URI, ratingValues);
+            mContext.getContentResolver().insert(RatingEntry.CONTENT_URI, ratingValues);
             ratingValues.clear();
         }
 
@@ -629,7 +641,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
         Log.d(TAG, "update: house id " + tempHouseId);
         //Time to call the provider to transport to the deliver to the mother database
-        getContext().getContentResolver().update(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId),
+        mContext.getContentResolver().update(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId),
                 houseValues,
                 null,
                 null);
@@ -650,7 +662,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             }
         }
         clickUpdateAndDataIsValid = false;
-        Toast.makeText(getContext(), "Update successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Update successfully", Toast.LENGTH_SHORT).show();
     }
 
     private void checkDataValid() {
@@ -686,7 +698,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         boolean flag = true;
 
         if (sliderAdapter.getCount() == 0) {
-            Toast.makeText(getContext(), "Please insert some image for this house", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Please insert some image for this house", Toast.LENGTH_SHORT).show();
             flag = false;
         }
 
@@ -741,7 +753,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         if (flag) {
             clickUpdateAndDataIsValid = true;
 
-            new MaterialAlertDialogBuilder(getContext())
+            new MaterialAlertDialogBuilder(mContext)
                     .setMessage("Are you sure you want to update this house? You can't redo after update.")
                     .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override

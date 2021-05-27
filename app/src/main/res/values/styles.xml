@@ -100,7 +100,7 @@
     <style name="ThemeOverlay.Shelter.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="colorPrimary">@color/toolbarIconColor</item>
         <item name="colorSecondary">@color/colorPrimaryDark</item>
-        <item name="colorSurface">@color/colorPrimary</item>
+        <item name="colorSurface">@color/productGridBackgroundColor</item>
         <item name="colorOnSurface">@color/toolbarIconColor</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>

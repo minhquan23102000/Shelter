@@ -17,6 +17,8 @@ import com.example.shelter.Data.ShelterDBContract.UserEntry;
 import com.example.shelter.Data.ShelterDBContract.HouseTypeEntry;
 import com.example.shelter.Data.ShelterDBContract.RatingEntry;
 import com.example.shelter.Data.ShelterDBContract.WishEntry;
+import com.example.shelter.Data.ShelterDBContract.AlertEntry;
+
 
 public class ShelterDBProvider extends ContentProvider {
     /** Tag for the log messages */
@@ -51,6 +53,12 @@ public class ShelterDBProvider extends ContentProvider {
 
     /** URI matcher code for the content URI for a single RATING in the rating table */
     private static final int RATING_ID = 301;
+
+    /** URI matcher code for the content URI for the RATING table */
+    private static final int ALERT = 350;
+
+    /** URI matcher code for the content URI for a single RATING in the rating table */
+    private static final int ALERT_ID = 351;
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
@@ -95,6 +103,10 @@ public class ShelterDBProvider extends ContentProvider {
         //WISH
         sUriMatcher.addURI(ShelterDBContract.CONTENT_AUTHORITY, ShelterDBContract.PATH_WISH, WISH);
         sUriMatcher.addURI(ShelterDBContract.CONTENT_AUTHORITY, ShelterDBContract.PATH_WISH + "/#", WISH_ID);
+
+        //ALERT
+        sUriMatcher.addURI(ShelterDBContract.CONTENT_AUTHORITY, ShelterDBContract.PATH_ALERT, ALERT);
+        sUriMatcher.addURI(ShelterDBContract.CONTENT_AUTHORITY, ShelterDBContract.PATH_ALERT + "/#", ALERT_ID);
     }
 
     /** Database helper object */
@@ -185,6 +197,16 @@ public class ShelterDBProvider extends ContentProvider {
                 cursor = database.query(WishEntry.TABLE_NAME, projection,selection, selectionArgs,
                         null, null, sortOrder);
                 break;
+            case ALERT:
+                cursor = database.query(AlertEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case ALERT_ID:
+                selection = AlertEntry._ID + "=?";
+                selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                cursor = database.query(AlertEntry.TABLE_NAME, projection,selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
@@ -210,6 +232,8 @@ public class ShelterDBProvider extends ContentProvider {
                 return goInsert(uri, contentValues, RatingEntry.TABLE_NAME);
             case WISH:
                 return goInsert(uri, contentValues, WishEntry.TABLE_NAME);
+            case ALERT:
+                return goInsert(uri, contentValues, AlertEntry.TABLE_NAME);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -285,6 +309,12 @@ public class ShelterDBProvider extends ContentProvider {
                 selection = WishEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 return goUpdate(uri,contentValues, selection, selectionArgs, WishEntry.TABLE_NAME);
+            case ALERT:
+                return goUpdate(uri, contentValues, selection, selectionArgs, AlertEntry.TABLE_NAME);
+            case ALERT_ID:
+                selection = AlertEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                return goUpdate(uri,contentValues, selection, selectionArgs, AlertEntry.TABLE_NAME);
 
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
@@ -361,6 +391,14 @@ public class ShelterDBProvider extends ContentProvider {
                 selection = WishEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
                 rowsDeleted = database.delete(WishEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case ALERT:
+                rowsDeleted = database.delete(AlertEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case ALERT_ID:
+                selection = AlertEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                rowsDeleted = database.delete(AlertEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);

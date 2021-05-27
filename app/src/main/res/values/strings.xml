@@ -119,6 +119,15 @@
     <string name="contacts_manager">Contacts Manager</string>
     <string name="solved">SOLVED</string>
     <string name="privacy_terms">Privacy terms</string>
+    <string name="alert_item_1">Images in advertise are not as same as reality</string>
+    <string name="alert_item_2">House\'s information is not reliable</string>
+    <string name="alert_item_3">The price is not fit</string>
+    <string name="contact_alert_house_owner">You are this house owner, can\'t send contact to yourself!</string>
+    <string name="close_house_alert">This house is close or delete by its owner</string>
+    <string name="report">Report</string>
+    <string name="cancel">Cancel</string>
+    <string name="reporting_house">Reporting house</string>
+    <string name="report_house_sucess">We have received your report. Thanks for your help!</string>
 
 
 </resources>

@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.shelter.MainActivity;
+import com.example.shelter.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.security.MessageDigest;
@@ -54,6 +55,7 @@ public class ShelterDBContract {
     public static final String PATH_HOUSE_TYPE = "houseType";
     public static final String PATH_RATING = "rating";
     public static final String PATH_WISH = "wish";
+    public static final String PATH_ALERT = "alert";
 
     public static final class HouseEntry implements BaseColumns {
         /**
@@ -731,5 +733,111 @@ public class ShelterDBContract {
          * Type: INT
          */
         public final static String COLUMN_WISH_PLACE = "place";
+    }
+
+    public static final class AlertEntry implements BaseColumns {
+        /**
+         * The content URI to access the USER data in the provider
+         */
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_ALERT);
+
+        /**
+         * The MIME type of the {@link #CONTENT_URI} for a list of USERs.
+         */
+        public static final String CONTENT_LIST_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ALERT;
+
+        /**
+         * The MIME type of the {@link #CONTENT_URI} for a single USER.
+         */
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ALERT;
+
+        /**
+         * Name of database table for House
+         */
+        public final static String TABLE_NAME = "alert";
+
+
+
+
+
+        /**
+         * Unique ID number for the rating (only for use in the database table).
+         * <p>
+         * Type: INTEGER
+         */
+        public final static String _ID = BaseColumns._ID;
+
+
+
+        /**
+         * HOUSE_ID WAS ALERTED
+         * <p>
+         * Type: INT
+         */
+        public final static String COLUMN_HOUSE_ID = "house_id";
+
+
+        /**
+         * ALERT STATE
+         * <p>
+         * Type: INT
+         * POSSIBLE VALUE FOR ALERT'S SATE
+         * UNSOLVED = 0
+         * SOLVED = 1
+         * CAN'T SOLVE = 2
+         */
+        public final static String COLUMN_ALERT_STATE = "state";
+        public final static int UNSOLVED = 0;
+        public final static int SOLVED = 1;
+        public final static int CANT_SOLVED = 2;
+
+        /**
+         * ALERT'S TOPIC SELECT
+         * <p>
+         * Type: INT
+         * * POSSIBLE VALUE FOR ALERT'S TOPIC SELECT
+         *          * Images in advertise are not as same as reality = 0
+         *          * House\'s information is not reliable = 1
+         *          * House price is not fit = 2
+         */
+        public final static String COLUMN_ALERT_TOPIC_SELECT = "topic_select";
+
+        public static String[] CREATE_TOPIC_SELECT_ITEMS (Context context) {
+            //Choosing items for alert house
+            return new String[]{
+                    context.getString(R.string.alert_item_1),
+                    context.getString(R.string.alert_item_2),
+                    context.getString(R.string.alert_item_3)
+            };
+        }
+
+        public static String GET_TOPIC_SELECT_ITEM (int selected, Context context) {
+            switch (selected) {
+                case 0:
+                    return context.getString(R.string.alert_item_1);
+                case 1:
+                    return context.getString(R.string.alert_item_2);
+                case 2:
+                    return context.getString(R.string.alert_item_3);
+                default:
+                    return "Selected item is not valid";
+            }
+        }
+
+        /**
+         * ALERT'S CONTENT
+         * <p>
+         * Type: TEXT
+         */
+        public final static String COLUMN_CONTENT = "description";
+
+        /**
+         * DATE CREATED (IT"S AUTOMATICALLY GET CURRENT DAY)
+         * <p>
+         * Type: TEXT
+         */
+        public final static String COLUMN_CREATE_DAY = "create_day";
     }
 }

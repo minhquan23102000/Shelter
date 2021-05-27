@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tool="http://schemas.android.com/tools"
     tool:context=".HouseDetailFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -33,6 +33,14 @@
                 app:sliderIndicatorUnselectedColor="@color/colorAccent"
                 app:sliderScrollTimeInSec="2"
                 app:sliderStartAutoCycle="true" />
+
+            <ImageView
+                android:id="@+id/house_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/outline_do_disturb_24"
+                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/favourite"
@@ -66,6 +74,15 @@
                     android:layout_alignParentStart="true"
                     android:text="Kí túc sá"
                     android:textAppearance="?attr/textAppearanceBody2" />
+
+                <ImageButton
+                    android:id="@+id/report_house"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_baseline_report"
+                    android:background="@null"
+                    android:layout_toEndOf="@+id/house_type" />
 
                 <TextView
                     android:id="@+id/rent_price"
