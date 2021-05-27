@@ -128,6 +128,9 @@
     <string name="cancel">Cancel</string>
     <string name="reporting_house">Reporting house</string>
     <string name="report_house_sucess">We have received your report. Thanks for your help!</string>
+    <string name="yes">Yes</string>
+    <string name="house_already_closed">This house is already closed</string>
+    <string name="house_already_opened">This house is already opened</string>
 
 
 </resources>

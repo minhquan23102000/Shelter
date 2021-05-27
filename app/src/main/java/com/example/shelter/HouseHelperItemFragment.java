@@ -277,9 +277,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Init update button, when on click it will check all data is valid and destroy this layout.
         // The update statement will be triggered onDestroyView Event.
         MaterialButton updateButton = view.findViewById(R.id.next_button);
-        updateButton.setOnClickListener(v -> {
-            checkDataValid();
-        });
+        updateButton.setOnClickListener(v -> checkDataValid());
 
 
         //Init redo button to redo change
@@ -288,7 +286,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             Fragment fragment = new HouseHelperItemFragment();
             if (!isNewHouse) {
                 Bundle saveState = new Bundle();
-                saveState.putInt("houseId", tempHouseId);
+                saveState.putInt(KEY_ARGUMENT_1, tempHouseId);
                 fragment.setArguments(saveState);
             }
 
@@ -392,26 +390,20 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                 if (houseState == HouseEntry.STATE_VISIBLE) {
                    new MaterialAlertDialogBuilder(mContext)
                            .setMessage(R.string.close_house_dialog)
-                           .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                               @Override
-                               public void onClick(DialogInterface dialog, int which) {
+                           .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-                               }
                            })
-                           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                               @Override
-                               public void onClick(DialogInterface dialog, int which) {
-                                   ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, mContext);
-                                   houseCloseImage.setVisibility(View.VISIBLE);
-                                   houseState = HouseEntry.STATE_ABANDONED;
-                               }
+                           .setPositiveButton(R.string.yes, (dialog, which) -> {
+                               ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, mContext);
+                               houseCloseImage.setVisibility(View.VISIBLE);
+                               houseState = HouseEntry.STATE_ABANDONED;
                            })
                            .show();
 
 
                 }
                 else {
-                    Toast.makeText(mContext, "This house is already closed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.house_already_closed, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -419,23 +411,17 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                 if (houseState == HouseEntry.STATE_ABANDONED) {
                     new MaterialAlertDialogBuilder(mContext)
                             .setMessage(R.string.open_house_dialog)
-                            .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                            .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-                                }
                             })
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_VISIBLE, mContext);
-                                    houseCloseImage.setVisibility(View.GONE);
-                                    houseState = HouseEntry.STATE_VISIBLE;
-                                }
+                            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                                ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_VISIBLE, mContext);
+                                houseCloseImage.setVisibility(View.GONE);
+                                houseState = HouseEntry.STATE_VISIBLE;
                             })
                             .show();
                 } else {
-                    Toast.makeText(mContext, "This house is already opened", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.house_already_opened, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -447,7 +433,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         menu.clear();
         menuInflater.inflate(R.menu.house_helper_toolbar_menu, menu);
@@ -755,18 +741,10 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
             new MaterialAlertDialogBuilder(mContext)
                     .setMessage("Are you sure you want to update this house? You can't redo after update.")
-                    .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-                        }
                     })
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            update();
-                        }
-                    })
+                    .setPositiveButton(R.string.yes, (dialog, which) -> update())
                     .show();
 
         }
