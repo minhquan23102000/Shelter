@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:background="@null" />
+            android:background="@color/secondaryColor" />
 
         <ImageButton
             android:id="@+id/delete_image_item"
@@ -26,17 +26,6 @@
             android:src="@drawable/outline_clear_24"
             android:visibility="gone"/>
 
-        <ImageButton
-            android:id="@+id/add_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="12dp"
-            android:layout_marginStart="12dp"
-            android:background="@null"
-            android:src="@drawable/outline_add_a_photo_24"
-            android:visibility="gone"/>
 
     </RelativeLayout>
 

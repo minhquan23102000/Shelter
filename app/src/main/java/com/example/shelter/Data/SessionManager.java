@@ -240,18 +240,8 @@ public class SessionManager {
     public LatLng getWishfulPointLatLng() {
 
         //Lat and Lng default
-        double lat;
-        double lng;
-
-        try {
-            lat = MainActivity.getUserLocation().getLatitude();
-            lng = MainActivity.getUserLocation().getLongitude();
-        } catch (Exception e) {
-            lat = MapsFragment.LAND_MARK_TOWER.latitude;
-            lng = MapsFragment.LAND_MARK_TOWER.longitude;
-            Toast.makeText(mContext, "Not have wish point and can't get your location, " +
-                    "we set LandMark Tower location as default", Toast.LENGTH_LONG).show();
-        }
+        double lat = MapsFragment.LAND_MARK_TOWER.latitude;
+        double lng = MapsFragment.LAND_MARK_TOWER.longitude;
 
         return new LatLng(getDouble(deliverGlobalDataSession, KEY_WISHFUL_POINT_LAT, lat),
                 getDouble(deliverGlobalDataSession, KEY_WISHFUL_POINT_LONG, lng));

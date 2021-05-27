@@ -24,17 +24,13 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     private boolean canEditItems = false;
     private boolean isItemsChange = false;
 
-    //ImageRequester to handle delete items
-    ImageRequester imageRequester;
+    private ImageRequester imageRequester;
 
 
     //List item that is delete
     private List<StorageReference> abandonRefs;
     //List item that display to layout
     private List<StorageReference> mSliderItems;
-
-    //Loading animation
-    CircularProgressDrawable loadingAnimation;
 
     public boolean isItemsChange() {
         return isItemsChange;
@@ -104,9 +100,6 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     @Override
     public ImageSliderAdapterVH onCreateViewHolder(ViewGroup parent) {
         View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_slider_item_layout, null);
-        loadingAnimation = new CircularProgressDrawable(parent.getContext());
-        loadingAnimation.setStrokeWidth(5f);
-        loadingAnimation.setCenterRadius(30f);
         return new ImageSliderAdapterVH(inflate);
     }
 
@@ -114,13 +107,7 @@ public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.Ima
     @Override
     public void onBindViewHolder(ImageSliderAdapterVH viewHolder, final int position) {
         StorageReference sliderItem = mSliderItems.get(position);
-        loadingAnimation.start();
-        Glide.with(viewHolder.itemView)
-                .load(sliderItem)
-                .placeholder(loadingAnimation)
-                .fitCenter()
-                .into(viewHolder.imageViewBackground);
-
+        imageRequester.loadImageByRef(viewHolder.imageViewBackground, sliderItem);
         viewHolder.deleteItem.setOnClickListener(v -> ImageSliderAdapter.this.deleteItem(position));
 
     }

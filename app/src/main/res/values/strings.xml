@@ -118,6 +118,7 @@
     <string name="delete_contact_warning">Do you want to delete this contact?</string>
     <string name="contacts_manager">Contacts Manager</string>
     <string name="solved">SOLVED</string>
+    <string name="privacy_terms">Privacy terms</string>
 
 
 </resources>

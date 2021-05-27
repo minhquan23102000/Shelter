@@ -15,10 +15,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 
 import com.bumptech.glide.Glide;
 import com.example.shelter.Data.ShelterDBContract.HouseEntry;
+import com.example.shelter.R;
 import com.example.shelter.adapter.ImageSliderAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +33,7 @@ import com.google.firebase.storage.UploadTask;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -57,28 +60,58 @@ public class ImageRequester {
     //Image GET AND EDIT Name Helper
     private final ImageNameGenerator imageNameGenerator;
 
+    //List ref of image headers for adapter view. For preventing reduplicate loading
+    private HashMap <Integer,StorageReference> refHeaders;
+
+    //Loading animation
+    public CircularProgressDrawable loadingAnimation;
+
 
 
     public ImageRequester(Context mContext) {
         this.mContext = mContext;
         storage = FirebaseStorage.getInstance();
         imageNameGenerator = new ImageNameGenerator(mContext);
+        refHeaders = new HashMap<>();
+
+        loadingAnimation = new CircularProgressDrawable(mContext);
+        loadingAnimation.setStrokeWidth(5f);
+        loadingAnimation.setCenterRadius(30f);
     }
 
+    public void loadImageByRef(ImageView imageView, StorageReference riverRef) {
+        loadingAnimation.start();
+        Glide.with(imageView.getContext())
+                .load(riverRef)
+                .placeholder(loadingAnimation)
+                .fitCenter()
+                .into(imageView);
+    }
 
     public void loadHeaderImage(int _id, String table_name, ImageView imageView) {
 
-        imageNameGenerator.getImageHeaderName(table_name, _id, new FirebaseCallBack<String>() {
-            @Override
-            public void onCallBack(List<String> items) {
+        //On load call back FireStore
+        FirebaseCallBack<String> onCallBackHeaderName = items -> {
+            //Note this is a list, but has one item. So we get 0;
+            if (items.get(0) != null) {
                 StorageReference refTemp = storage.getReference().child(IMAGE_FOLDER).child(items.get(0));
-                Glide.with(mContext)
-                        .load(refTemp)
-                        .into(imageView);
+                refHeaders.put(_id, refTemp);
+                loadImageByRef(imageView, refTemp);
+            } else {
+                imageView.setImageResource(R.drawable.ic_empty_shelter);
             }
-        });
+        };
 
+
+
+        //If we already load image name, we can re use it by this hash map
+        if (refHeaders.get(_id) != null) {
+            loadImageByRef(imageView, refHeaders.get(_id));
+        } else {
+            imageNameGenerator.getImageHeaderName(table_name, _id, onCallBackHeaderName);
+        }
     }
+
 
     public void loadListRefToSliderAdapter(int _id, String table_name,
                                            ImageSliderAdapter imageSliderAdapter, SliderView sliderView) {

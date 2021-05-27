@@ -39,6 +39,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationHost {
     public final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -58,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
 
         //Here check if the user is already login, if not, navigation to the Login Fragment
         mAuth = FirebaseAuth.getInstance();

@@ -107,8 +107,11 @@ public class VerifyFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                getParentFragmentManager().popBackStack();
-                Toast.makeText(getContext(), R.string.verify_time_out, Toast.LENGTH_LONG).show();
+                if (!isVerify) {
+                    getParentFragmentManager().popBackStack();
+                    Toast.makeText(getContext(), R.string.verify_time_out, Toast.LENGTH_LONG).show();
+                }
+
             }
         }.start();
     }

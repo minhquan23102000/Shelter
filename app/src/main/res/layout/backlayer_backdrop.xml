@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="100dp">
+    android:paddingTop="78dp">
 
 
     <com.google.android.material.button.MaterialButton
@@ -45,20 +45,13 @@
         android:text="@string/contacts_manager" />
 
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/feedback_menu"
-        style="@style/Widget.Shelter.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/feedback" />
-
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/privacy_terms"
         style="@style/Widget.Shelter.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Privacy terms" />
+        android:text="@string/privacy_terms" />
 
     <View
         android:layout_width="56dp"

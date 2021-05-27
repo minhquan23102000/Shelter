@@ -22,8 +22,7 @@
                 android:id="@+id/house_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="?attr/colorPrimaryDark"
-                android:src="@drawable/ic_empty_shelter"
+                android:background="@color/secondaryColor"
                 android:scaleType="centerCrop" />
             <ImageView
                 android:id="@+id/wished_icon"

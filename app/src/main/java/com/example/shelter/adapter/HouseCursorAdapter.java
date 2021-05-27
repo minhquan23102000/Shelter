@@ -49,7 +49,6 @@ public class HouseCursorAdapter extends CursorAdapter {
         //Find Wishful icon image, we set it visible when user cast a wish
         ImageView wishfulIcon = view.findViewById(R.id.wished_icon);
 
-
         if (sessionManager.haveWishPointData()) {
             wishfulIcon.setVisibility(View.VISIBLE);
         } else {

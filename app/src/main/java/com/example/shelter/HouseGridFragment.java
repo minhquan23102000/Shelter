@@ -99,8 +99,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private String sortOrder = null;
 
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,6 +152,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         //Set Swipe up to refreshLayout
         swipeRefreshLayout = view.findViewById(R.id.swipe_to_refresh);
         swipeRefreshLayout.setOnRefreshListener(() -> {
+            //Set sort order to default
+            sortOrder = null;
             //Clear search selection
             if (selectionArgsForHouseLoader != null)
                 selectionArgsForHouseLoader.clear();
@@ -327,7 +327,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                     selectionForSearch += " OR " + HouseEntry.COLUMN_HOUSE_TYPE_ID + queryHouseTypeName + ")";
                 }
 
-                if (sessionManager.haveWishPointData() && (wishedHouses == null || wishedHouses.isEmpty()) ) {
+                if (sessionManager.haveWishPointData() && (wishedHouses == null || wishedHouses.isEmpty())) {
                     //query to ensure this loader return zero items. Because there are no available houses for this wish
                     selectionForHouseLoader = HouseEntry._ID + " IS NULL";
                 } else if (wishedHouses != null && !wishedHouses.isEmpty()) {
@@ -338,7 +338,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
 
                 }
-                Log.d(TAG, "onCreateLoader: wishedHouseQuery selection" + selectionForHouseLoader );
+                Log.d(TAG, "onCreateLoader: wishedHouseQuery selection" + selectionForHouseLoader);
                 String finalSelectionString = null;
                 if (selectionForSearch != null && selectionForHouseLoader != null) {
                     finalSelectionString = selectionForSearch + " AND " + selectionForHouseLoader /**/;
@@ -396,8 +396,9 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                 if (data.moveToFirst()) {
                     do {
                         if (ShelterDBHelper.getDistanceFromHouseToThePointer(sessionManager, data) <= HouseEntry.MAX_NEARBY_RADIUS
-                        || sessionManager.getWishfulPointLatLng().latitude == MapsFragment.LAND_MARK_TOWER.latitude
-                        || sessionManager.getWishfulPointLatLng().longitude == MapsFragment.LAND_MARK_TOWER.longitude) {
+                                || sessionManager.getWishfulPointLatLng().latitude == MapsFragment.LAND_MARK_TOWER.latitude
+                                || sessionManager.getWishfulPointLatLng().longitude == MapsFragment.LAND_MARK_TOWER.longitude) {
+
                             wishedHouses.add(data.getString(data.getColumnIndex(HouseEntry._ID)));
                         }
                     } while (data.moveToNext());
@@ -412,7 +413,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                     recyclerViewAdapter.notifyDataSetChanged();
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
-
 
                 } else {
                     emptyView.setVisibility(View.VISIBLE);
