@@ -91,6 +91,7 @@
 
     <ListView
         android:id="@+id/contacts_list"
+        android:focusable="true"
         android:minHeight="150dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

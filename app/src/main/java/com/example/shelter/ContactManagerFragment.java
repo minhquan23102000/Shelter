@@ -31,6 +31,7 @@ import com.example.shelter.adapter.ContactsAdapter;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ContactManagerFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -48,9 +49,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
 
     private List<String> housesId;
     private List<String> housesName;
-
-    private List<String> usersContactId;
-    private List<Boolean> contactIsSolved;
+    private HashMap<String, Boolean> usersIsSolved;
 
     private int currentHouseId;
     private int countContactsSolved = 0;
@@ -69,6 +68,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
     ArrayAdapter<String> spinnerHouseNameAdapter;
     ContactsAdapter listContactsAdapter;
 
+    private boolean firstLoad = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -145,10 +145,10 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
                         selectionArgs,                   // No selection arguments
-                        RatingEntry.COLUMN_STARS);// Default sort order
+                        null);// Default sort order
                 break;
             case GET_LIST_HOUSE_NAMES_OWNERS_LOADER:
-                projection = new String[] {
+                projection = new String[]{
                         HouseEntry._ID,
                         HouseEntry.COLUMN_HOUSE_NAME
                 };
@@ -181,7 +181,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
                         null,                   // No selection arguments
-                        RatingEntry.COLUMN_STARS);// Default sort order
+                        null);// Default sort order
                 break;
 
             case GET_LIST_USERS_DATA_LOADER:
@@ -192,14 +192,11 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                         UserEntry.COLUMN_USER_INCOME,
                         UserEntry.COLUMN_USER_PHONE
                 };
-                if (usersContactId != null) {
-                    selection = usersContactId.toString();
-                    selection = selection.replace("[", "(");
-                    selection = selection.replace("]", ")");
-                    selection = UserEntry._ID + " IN " + selection;
-                } else {
-                    selection = UserEntry._ID + " IS NULL";
-                }
+                selection = usersIsSolved.keySet().toString();
+                selection = selection.replace("[", "(");
+                selection = selection.replace("]", ")");
+                selection = UserEntry._ID + " IN " + selection;
+
 
                 cursorLoader = new CursorLoader(getContext(),   // Parent activity context
                         UserEntry.CONTENT_URI,   // Provider content URI to query
@@ -222,7 +219,11 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                         housesId.add(data.getString(data.getColumnIndex(RatingEntry.COLUMN_HOUSE_ID)));
                     } while (data.moveToNext());
                 }
-                LoaderManager.getInstance(this).initLoader(GET_LIST_HOUSE_NAMES_OWNERS_LOADER, null, this);
+                if (firstLoad) {
+                    LoaderManager.getInstance(this).initLoader(GET_LIST_HOUSE_NAMES_OWNERS_LOADER, null, this);
+                    firstLoad = false;
+                }
+
                 break;
 
             case GET_LIST_HOUSE_NAMES_OWNERS_LOADER:
@@ -233,6 +234,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                     } while (data.moveToNext());
                     Log.d(TAG, "onLoadFinished: GET_LIST_HOUSE_NAMES_OWNERS_LOADER -- " + housesName.toString());
 
+
                     String[] asArray = new String[housesName.size()];
                     housesName.toArray(asArray);
                     spinnerHouseNameAdapter = new ArrayAdapter<>(getContext(), R.layout.dropdown_menu, asArray);
@@ -240,38 +242,42 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                     houseNameSpinner.setAdapter(spinnerHouseNameAdapter);
                     houseNameTV.setText(spinnerHouseNameAdapter.getItem(0));
                     imageRequester.loadHeaderImage(Integer.parseInt(housesId.get(0)), HouseEntry.TABLE_NAME, contactHouseImageView);
+                    currentHouseId = Integer.parseInt(housesId.get(0));
                 }
                 LoaderManager.getInstance(this).restartLoader(GET_LIST_USERS_ID_CONTACT_LOADER, null, this);
                 break;
             case GET_LIST_USERS_ID_CONTACT_LOADER:
-                usersContactId = new ArrayList<>();
-                contactIsSolved = new ArrayList<>();
+                usersIsSolved = new HashMap<>();
+                countContactsSolved = 0;
+                countContactsAlive = 0;
                 if (data.moveToFirst()) {
                     do {
                         int ratingStar = data.getInt(data.getColumnIndex(RatingEntry.COLUMN_STARS));
+                        String userId = data.getString(data.getColumnIndex(RatingEntry.COLUMN_USER_ID));
                         if (ratingStar == RatingEntry.CONTACT_SOLVED) {
                             countContactsSolved++;
-                            contactIsSolved.add(true);
+                            usersIsSolved.put(userId, true);
                         } else if (ratingStar == RatingEntry.SEND_CONTACT) {
                             countContactsAlive++;
-                            contactIsSolved.add(false);
+                            usersIsSolved.put(userId, false);
                         }
-                        usersContactId.add(data.getString(data.getColumnIndex(RatingEntry.COLUMN_USER_ID)));
                     } while (data.moveToNext());
                 }
                 String countSolve = countContactsSolved + " ";
                 countSolve += getString(R.string.contact_solved);
                 countContactsSolvedTV.setText(countSolve);
+
                 String countAlive = countContactsAlive + " ";
                 countAlive += getString(R.string.contacts_alive);
                 countContactsAliveTV.setText(countAlive);
+                Log.d(TAG, "onLoadFinished: hasMap Userid  " + usersIsSolved.keySet());
 
                 LoaderManager.getInstance(this).restartLoader(GET_LIST_USERS_DATA_LOADER, null, this);
                 break;
             case GET_LIST_USERS_DATA_LOADER:
                 listContactsAdapter.swapCursor(data);
+                listContactsAdapter.renewContactData(currentHouseId, usersIsSolved);
                 listContactsAdapter.notifyDataSetChanged();
-                listContactsAdapter.renewContactData(currentHouseId, contactIsSolved);
                 break;
 
         }
@@ -279,9 +285,8 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-            if (loader.getId() == GET_LIST_USERS_DATA_LOADER) {
-                listContactsAdapter.swapCursor(null);
-                listContactsAdapter.renewContactData(-1, null);
-            }
+        if (loader.getId() == GET_LIST_USERS_DATA_LOADER) {
+            listContactsAdapter.swapCursor(null);
+        }
     }
 }

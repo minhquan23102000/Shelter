@@ -13,6 +13,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="12dp"
         android:background="@null"
+        android:focusable="false"
         android:src="@drawable/outline_remove_circle_outline_black_24" />
 
 
@@ -44,7 +45,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="8dp"
             android:maxLines="1"
-            android:text="Income: 8 Triệu đồng"
+            android:text="8 Triệu đồng"
             android:textAppearance="?attr/textAppearanceBody2" />
 
         <TextView
@@ -64,7 +65,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="120dp"
             android:text="johnhood@hutech.edu.vn"
-            android:textAppearance="?attr/textAppearanceBody1" />
+            android:textAppearance="?attr/textAppearanceBody2" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/solve_button"
@@ -76,6 +77,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="12dp"
+            android:focusable="false"
             android:text="@string/contact_solve" />
     </RelativeLayout>
 
