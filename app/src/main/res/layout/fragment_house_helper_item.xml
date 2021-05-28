@@ -62,8 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:src="@drawable/outline_do_disturb_24"
-                    android:visibility="gone"
-                    />
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:id="@+id/add_image"
@@ -125,8 +124,8 @@
                             android:layout_height="wrap_content"
                             android:enabled="false"
                             android:inputType="none"
-                            android:text="@string/default_value_place"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:text="@string/default_value_place" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -143,8 +142,8 @@
                             android:layout_height="wrap_content"
                             android:enabled="false"
                             android:inputType="none"
-                            android:text="@string/default_value_house_type"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:text="@string/default_value_house_type" />
                     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -269,6 +268,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/locate_your_house"
+                        android:scrollbars="vertical"
                         app:errorEnabled="true"
                         app:startIconDrawable="@drawable/outline_place_24">
 
@@ -313,6 +313,28 @@
                             android:layout_height="wrap_content"
                             android:inputType="numberDecimal" />
                     </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/more_info_text_input"
+                        style="@style/Widget.Shelter.TextInputLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/house_content"
+                        app:errorEnabled="true"
+                        app:placeholderText="@string/more_info_place_holder">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/more_info_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="top|start"
+                            android:inputType="textMultiLine"
+                            android:lines="8"
+                            android:minLines="6"
+                            android:scrollbars="vertical" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
 
                     <RelativeLayout
                         android:layout_width="match_parent"

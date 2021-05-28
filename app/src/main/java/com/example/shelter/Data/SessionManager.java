@@ -16,11 +16,11 @@ import java.util.HashMap;
 
 public class SessionManager {
     public static final String TAG = SessionManager.class.getName();
-    private SharedPreferences userSession;
-    private SharedPreferences deliverGlobalDataSession;
-    private SharedPreferences.Editor userDataEditor;
-    private SharedPreferences.Editor globalDataEditor;
-    private Context mContext;
+    private final SharedPreferences userSession;
+    private final SharedPreferences deliverGlobalDataSession;
+    private final SharedPreferences.Editor userDataEditor;
+    private final SharedPreferences.Editor globalDataEditor;
+    private final Context mContext;
 
     static final public String KEY_USER_PHONE = "userPhone";
     static final public String KEY_USER_EMAIL = "userEmail";
@@ -174,6 +174,10 @@ public class SessionManager {
         userData.put(KEY_USER_URI, userSession.getString(KEY_USER_URI, null));
         userData.put(KEY_USER_EMAIL, userSession.getString(KEY_USER_EMAIL, null));
         return userData;
+    }
+
+    public String getUserPhone() {
+        return userSession.getString(KEY_USER_PHONE, null);
     }
 
     public HashMap<String, String> getUserTempData() {

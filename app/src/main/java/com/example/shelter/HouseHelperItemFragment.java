@@ -25,6 +25,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,7 +67,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     public static final String TAG = HouseHelperItemFragment.class.getName();
     private static final int HOUSE_DATA_LOADER = 349;
     private static final String KEY_ARGUMENT_1 = "houseId";
-    
+
     //Context and Activity
     private Context mContext;
     private Activity mActivity;
@@ -75,8 +76,8 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
     //Init intent launcher
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
-    
-    
+
+
     //All view needed in layout
     //Views
     private TextInputEditText areaEditText;
@@ -99,6 +100,9 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     private TextInputLayout houseNameInputLayout;
     private TextInputEditText yardSizeEditText;
     private TextInputLayout yardSizeInputLayout;
+    private TextInputLayout moreInfoInputLayout;
+    private TextInputEditText moreInfoEditText;
+
     private ImageView houseCloseImage;
 
     private AutoCompleteTextView placeText;
@@ -208,11 +212,14 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         placeText = view.findViewById(R.id.place_text);
         houseTypeText = view.findViewById(R.id.house_type_text);
 
-
+        moreInfoInputLayout = view.findViewById(R.id.more_info_text_input);
+        moreInfoEditText = view.findViewById(R.id.more_info_edit_text);
+        moreInfoEditText.setMovementMethod(new ScrollingMovementMethod());
 
         //First load is to check, if this fragment is first created and not by resume
         if (firstLoad) {
             //If temp house != -1 we kick the loader to fill data in UI. Else we insert a new house, so the data in UI will be blank.
+
             if (tempHouseId != -1) {
                 LoaderManager.getInstance(HouseHelperItemFragment.this).initLoader(HOUSE_DATA_LOADER, null, HouseHelperItemFragment.this);
 
@@ -245,9 +252,13 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
                 //Set it to true to recognize its later to delete this house when update failed
                 isNewHouse = true;
                 firstLoad = false;
+
+                //Set placeholder for moreInfoText
+                String moreInfoPlaceHolder = getString(R.string.call_me_at_);
+                moreInfoPlaceHolder += " " + sessionManager.getUserPhone();
+                moreInfoEditText.setText(moreInfoPlaceHolder);
             }
         }
-
 
 
         //Init image slider
@@ -283,15 +294,19 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Init redo button to redo change
         MaterialButton redoButton = view.findViewById(R.id.back_button);
         redoButton.setOnClickListener(v -> {
-            Fragment fragment = new HouseHelperItemFragment();
             if (!isNewHouse) {
+                Fragment fragment = new HouseHelperItemFragment();
                 Bundle saveState = new Bundle();
                 saveState.putInt(KEY_ARGUMENT_1, tempHouseId);
                 fragment.setArguments(saveState);
+
+
+                //Reload fragment
+                ((MainActivity) mActivity).navigateTo(fragment, false);
+            } else {
+                getParentFragmentManager().popBackStack();
             }
 
-            //Reload fragment
-            ((MainActivity) mActivity).navigateTo(fragment, false);
         });
 
         //Find all needed view, prepare data for layout
@@ -318,6 +333,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
         housePointEditText = view.findViewById(R.id.house_point_edit_text);
         housePointInputLayout = view.findViewById(R.id.house_point_text_input);
+        housePointEditText.setMovementMethod(new ScrollingMovementMethod());
 
         houseNameEditText = view.findViewById(R.id.house_name_edit_text);
         houseNameInputLayout = view.findViewById(R.id.house_name_text_input);
@@ -388,26 +404,23 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         toolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_delete) {
                 if (houseState == HouseEntry.STATE_VISIBLE) {
-                   new MaterialAlertDialogBuilder(mContext)
-                           .setMessage(R.string.close_house_dialog)
-                           .setNeutralButton(R.string.cancel, (dialog, which) -> {
+                    new MaterialAlertDialogBuilder(mContext)
+                            .setMessage(R.string.close_house_dialog)
+                            .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-                           })
-                           .setPositiveButton(R.string.yes, (dialog, which) -> {
-                               ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, mContext);
-                               houseCloseImage.setVisibility(View.VISIBLE);
-                               houseState = HouseEntry.STATE_ABANDONED;
-                           })
-                           .show();
+                            })
+                            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                                ShelterDBHelper.updateHouseState(tempHouseId, HouseEntry.STATE_ABANDONED, mContext);
+                                houseCloseImage.setVisibility(View.VISIBLE);
+                                houseState = HouseEntry.STATE_ABANDONED;
+                            })
+                            .show();
 
 
-                }
-                else {
+                } else {
                     Toast.makeText(mContext, R.string.house_already_closed, Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            else if (item.getItemId() == R.id.action_open) {
+            } else if (item.getItemId() == R.id.action_open) {
                 if (houseState == HouseEntry.STATE_ABANDONED) {
                     new MaterialAlertDialogBuilder(mContext)
                             .setMessage(R.string.open_house_dialog)
@@ -463,6 +476,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             String houseFloors = data.getString(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_FLOORS));
             String houseYearBuilt = data.getString(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_YEAR_BUILT));
             String houseYardSize = data.getString(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_YARD_SIZE));
+            String moreInfo = data.getString(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_CONTENT));
             int housePlace = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_PLACE));
             int houseType = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_TYPE_ID));
             houseState = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_STATE));
@@ -491,6 +505,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             Log.d(TAG, "onLoadFinished: " + "load again");
             if (firstLoad) {
                 imageRequester.loadListRefToSliderAdapter(tempHouseId, HouseEntry.TABLE_NAME, sliderAdapter, sliderView);
+                moreInfoEditText.setText(moreInfo);
                 firstLoad = false;
             }
         }
@@ -540,6 +555,21 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         super.onStop();
     }
 
+    @Override
+    public void onPause() {
+        //Update failed. This trigger when User quit the app when on map fragment or on Get image Intent, But data is not valid or not click update.
+        if (!clickUpdateAndDataIsValid && (!toGetImage && !toMapFragment)) {
+            //Update failed
+            if (isNewHouse) {
+                mContext.getContentResolver().delete(ContentUris.withAppendedId(HouseEntry.CONTENT_URI, tempHouseId), null, null);
+            }
+
+            //Update failed delete all the ref user inserted in
+            imageRequester.deleteAListOfRef(tempRefs);
+        }
+        super.onPause();
+    }
+
     private void update() {
         //All value from UI
         String houseName = houseNameEditText.getText().toString().trim();
@@ -587,7 +617,10 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         double pointLng = housePoint.longitude;
         String houseAddress = housePointEditText.getText().toString().trim();
 
-
+        String moreInfo = null;
+        if (moreInfoEditText.getText() != null) {
+            moreInfo = moreInfoEditText.getText().toString().trim();
+        }
 
 
         //Put values to the rating deliver, to know who is the owner of this house
@@ -624,6 +657,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         houseValues.put(HouseEntry.COLUMN_HOUSE_ADDRESS, houseAddress);
         houseValues.put(HouseEntry.COLUMN_HOUSE_TYPE_ID, houseType);
         houseValues.put(HouseEntry.COLUMN_HOUSE_PLACE, place);
+        houseValues.put(HouseEntry.COLUMN_HOUSE_CONTENT, moreInfo);
 
         Log.d(TAG, "update: house id " + tempHouseId);
         //Time to call the provider to transport to the deliver to the mother database
