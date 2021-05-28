@@ -45,7 +45,6 @@
         android:text="@string/contacts_manager" />
 
 
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/privacy_terms"
         style="@style/Widget.Shelter.Button.TextButton"

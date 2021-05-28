@@ -457,6 +457,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         castAWishMenu = (MaterialButton) view.findViewById(R.id.cast_a_wish_menu);
         yourFavouriteMenu = (MaterialButton) view.findViewById(R.id.your_favourite_menu);
         myAccountMenu = (MaterialButton) view.findViewById(R.id.my_account_menu);
+        final MaterialButton termPrivacyMenu = view.findViewById(R.id.privacy_terms);
 
         signOutMenu.setOnClickListener(this);
 
@@ -466,11 +467,12 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         castAWishMenu.setOnClickListener(this);
         myAccountMenu.setOnClickListener(this);
 
+        termPrivacyMenu.setOnClickListener(this);
+
         //House Owner
         houseHelperMenu = (MaterialButton) view.findViewById(R.id.house_helper_menu);
         shelterStatisticMenu = (MaterialButton) view.findViewById(R.id.shelter_statistics_menu);
         final MaterialButton contactManagerMenu = view.findViewById(R.id.contact_manager_menu);
-
 
         if (sessionManager.getUserRole() == ShelterDBContract.UserEntry.VIEWER) {
             houseHelperMenu.setVisibility(View.GONE);
@@ -488,7 +490,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.sign_out_menu) {
-            Log.d(TAG, "sign out on click");
+
             sessionManager.clearUserSession();
             sessionManager.clearGlobalDataSession();
             ((NavigationHost) getActivity()).navigateTo(new LoginFragment(), false);
@@ -503,6 +505,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
             ((NavigationHost) getActivity()).navigateTo(new HousesHelperFragment(), true);
         } else if (id == R.id.contact_manager_menu) {
             ((NavigationHost) getActivity()).navigateTo(new ContactManagerFragment(), true);
+        } else if (id == R.id.privacy_terms) {
+            ((NavigationHost) getActivity()).navigateTo(new TermPrivacyFragment(), true);
         }
     }
 
