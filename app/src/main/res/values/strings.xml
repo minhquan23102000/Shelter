@@ -131,6 +131,9 @@
     <string name="yes">Yes</string>
     <string name="house_already_closed">This house is already closed</string>
     <string name="house_already_opened">This house is already opened</string>
+    <string name="more_info_place_holder">We strongly recommend you put your phone number in this field</string>
+    <string name="call_me_at_">Call me at this phone number</string>
+    <string name="house_content">House content</string>
 
 
 </resources>
