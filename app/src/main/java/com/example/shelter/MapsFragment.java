@@ -4,12 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,8 @@ public class MapsFragment extends Fragment {
     static public final String KEY_PRE_FRAGMENT = "fragment";
     static public final String KEY_POINT_LAT = "pointLatitude";
     static public final String KEY_POINT_LNG = "pointLongitude";
+    
+    private Context mContext;
 
     private String lastMarkerName;
     private LatLng lastMarkerLatLng;
@@ -108,16 +109,7 @@ public class MapsFragment extends Fragment {
             }
 
             android.location.Address address = addresses.get(0);
-            StringBuilder sb = new StringBuilder();
-            if (address != null) {
-                for (int i = 0; i < address.getMaxAddressLineIndex(); i++){
-                    sb.append(address.getAddressLine(i)).append(", ");
-                }
-                Log.d(TAG, "getAddress: " + sb.toString());
-                return sb.toString();
-            } else {
-                return null;
-            }
+            return address.getAddressLine(0);
 
 
         }
@@ -138,6 +130,7 @@ public class MapsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable  Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getContext();
         if (getArguments() != null) {
             //Get data from the deliver
             fatherContext = getArguments().getString(KEY_PRE_FRAGMENT, HouseDetailFragment.TAG);
@@ -149,7 +142,8 @@ public class MapsFragment extends Fragment {
             throw new NullPointerException("The deliver to map fragment is is null");
         }
 
-        geocoder = new Geocoder(getContext(), Locale.getDefault());
+        if (fatherContext.equals(HouseHelperItemFragment.TAG))
+            geocoder = new Geocoder(mContext.getApplicationContext(), Locale.getDefault());
     }
 
     @Nullable
@@ -173,7 +167,7 @@ public class MapsFragment extends Fragment {
 
         //Expression of map fragment for house helper item fragment
         if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
-            wishPointNameInputLayout.setHint(getContext().getString(R.string.address));
+            wishPointNameInputLayout.setHint(mContext.getString(R.string.address));
             wishPointNameInputLayout.setPlaceholderText(null);
         }
 
@@ -184,7 +178,7 @@ public class MapsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(mContext);
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -195,7 +189,7 @@ public class MapsFragment extends Fragment {
 
 
         if (!Places.isInitialized())
-            Places.initialize(getContext().getApplicationContext(), getContext().getString(R.string.google_maps_key));
+            Places.initialize(mContext.getApplicationContext(), mContext.getString(R.string.google_maps_key));
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
@@ -203,7 +197,7 @@ public class MapsFragment extends Fragment {
 
 
         // Create a new PlacesClient instance
-        PlacesClient placesClient = Places.createClient(getContext());
+        PlacesClient placesClient = Places.createClient(mContext);
 
         //Set type filter and location filter
         autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
@@ -241,7 +235,7 @@ public class MapsFragment extends Fragment {
 
             if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
                 if (wishPointNameEditText.getText().length() == 0 || wishPointNameEditText.getText() == null) {
-                    Toast.makeText(getContext(), R.string.this_place_need_an_address, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.this_place_need_an_address, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     lastMarkerName = wishPointNameEditText.getText().toString();
@@ -254,7 +248,7 @@ public class MapsFragment extends Fragment {
             //Expression when click here button for cast wish fragment
             if (fatherContext.equals(CastAWishFragment.TAG)) {
                 if (wishPointNameEditText.getText().length() == 0 || wishPointNameEditText.getText() == null) {
-                    Toast.makeText(getContext(), R.string.this_place_need_a_name, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.this_place_need_a_name, Toast.LENGTH_SHORT).show();
                 }
                 else {
                     lastMarkerName = wishPointNameEditText.getText().toString();
