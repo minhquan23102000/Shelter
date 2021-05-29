@@ -67,8 +67,6 @@ public class HouseCursorAdapter extends CursorAdapter {
         int nameColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_NAME);
         int areaColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_AREA);
         int rentCostColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_RENT_COST);
-        int latitudeColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_LATITUDE);
-        int longitudeColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_LONGITUDE);
         int houseTypeColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_TYPE_ID);
 
         // Read the House attributes from the Cursor for the current House

@@ -72,6 +72,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
     private ImageButton isFavouriteButton;
     private MaterialButton sendContactButton;
     private ImageButton alertButton;
+    private TextView countViewsTV;
 
     private ImageView closeHouseIcon;
     private SliderView sliderView;
@@ -136,6 +137,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
         moreInfoTV = (TextView) view.findViewById(R.id.more_detail);
         moreInfoTVLabel = (TextView) view.findViewById(R.id.mote_detail_label);
         houseAreaTV = (TextView) view.findViewById(R.id.house_area);
+        countViewsTV = view.findViewById(R.id.count_views);
 
         //Button
         sendContactButton = view.findViewById(R.id.send_contact_button);
@@ -332,6 +334,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                     housePlace += HouseEntry.getPlaceName(data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_PLACE)));
                     String house_content = data.getString(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_CONTENT));
                     int houseState = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_STATE));
+                    int countViews = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_COUNT_VIEWS));
 
                     //Query house type name
                     Integer houseType = data.getInt(data.getColumnIndex(HouseEntry.COLUMN_HOUSE_TYPE_ID));
@@ -364,6 +367,8 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                         houseSalePrice = getString(R.string.rent_only);
                     }
 
+
+
                     //Update correspond text view
                     houseNameTV.setText(houseName);
                     houseAddressTV.setText(houseAddress);
@@ -371,6 +376,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                     salePriceTV.setText(houseSalePrice);
                     houseTypeTV.setText(houseTypeName);
                     houseAreaTV.setText(getString(R.string.area) + " " + houseArea + " m2");
+                    countViewsTV.setText(countViews + "views");
 
                     String moreInfo = houseBedRooms + houseBathRooms + houseFloors +
                             houseYearBuilt + houseYardSize + housePlace;

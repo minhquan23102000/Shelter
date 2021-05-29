@@ -1,6 +1,8 @@
 package com.example.shelter;
 
+import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -55,7 +57,12 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private static final int GET_WISHED_HOUSE_ID_LOADER = 684;
     private static final int WISHED_HOUSE_LOADER = 666;
     private static boolean isFirstLoad = true;
-
+    
+    
+    //Context and activity
+    private Context mContext;
+    private Activity mActivity;
+    
     private RecyclerView recyclerView;
     private StaggeredHouseCardRecyclerViewAdapter.RecyclerViewOnClickListener listener;
     /**
@@ -102,8 +109,9 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
+        mContext = getContext();
+        mActivity = getActivity();
     }
 
 
@@ -113,7 +121,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
         View view = inflater.inflate(R.layout.house_grid_fragment, container, false);
         //Init Session Data for this context
-        sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(mContext);
 
         //Init backdropLayout
         backdropLayout = view.findViewById(R.id.menu_container);
@@ -127,7 +135,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         recyclerView = view.findViewById(R.id.recycler_view);
         // Set up the RecyclerView
         recyclerView.setHasFixedSize(true);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.HORIZONTAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, 2, GridLayoutManager.HORIZONTAL, false);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -141,7 +149,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         // There is no House data yet (until the loader finishes) so pass in null for the Cursor.
         setItemOnClickListener();
         cursor = null;
-        recyclerViewAdapter = new StaggeredHouseCardRecyclerViewAdapter(getContext(), cursor, listener);
+        recyclerViewAdapter = new StaggeredHouseCardRecyclerViewAdapter(mContext, cursor, listener);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         //Padding items in recycler View
@@ -178,8 +186,10 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     //On House card click
     private void setItemOnClickListener() {
         listener = (v, position, id) -> {
+            //update count views up to 1
+            ShelterDBHelper.increaseValueToOne(HouseEntry.TABLE_NAME, HouseEntry.COLUMN_HOUSE_COUNT_VIEWS, (int)id, mContext);
             String houseUri = ContentUris.withAppendedId(HouseEntry.CONTENT_URI, id).toString();
-            ((NavigationHost) getActivity()).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
+            ((NavigationHost) mActivity).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
         };
 
     }
@@ -206,14 +216,14 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
     private void setUpToolbar(View view) {
         Toolbar toolbar = view.findViewById(R.id.app_bar);
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) mActivity;
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
         }
 
 
         toolbar.inflateMenu(R.menu.shr_toolbar_menu);
-        toolbar.setOverflowIcon(AppCompatResources.getDrawable(getContext(), R.drawable.shr_filter));
+        toolbar.setOverflowIcon(AppCompatResources.getDrawable(mContext, R.drawable.shr_filter));
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -257,7 +267,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         item.setActionView(searchView);
 
         //Handle search event
-        searchView.setQueryHint(getContext().getString(R.string.search));
+        searchView.setQueryHint(mContext.getString(R.string.search));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -268,7 +278,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                 }
                 item.collapseActionView();
 
-                Toast.makeText(getContext(), "query search:" + query, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "query search:" + query, Toast.LENGTH_SHORT).show();
                 //We add it three time for 3 filter conditions
                 selectionArgsForHouseLoader = new ArrayList<>();
                 String likeQuery = "%" + query + "%";
@@ -350,7 +360,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
 
                 // This loader will execute the ContentProvider's query method on a background thread
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         finalSelectionString,                   // selection clause
@@ -372,7 +382,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                 }
 
                 // This loader will execute the ContentProvider's query method on a background thread
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selectionForWishLoader,                   // selection clause
@@ -493,20 +503,20 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
             sessionManager.clearUserSession();
             sessionManager.clearGlobalDataSession();
-            ((NavigationHost) getActivity()).navigateTo(new LoginFragment(), false);
+            ((NavigationHost) mActivity).navigateTo(new LoginFragment(), false);
         } else if (id == R.id.your_favourite_menu) {
-            ((NavigationHost) getActivity()).navigateTo(new YourFavouriteFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new YourFavouriteFragment(), true);
         } else if (id == R.id.my_account_menu) {
-            ((NavigationHost) getActivity()).navigateTo(new MyAccountFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new MyAccountFragment(), true);
         } else if (id == R.id.cast_a_wish_menu) {
             isFirstLoad = true;
-            ((NavigationHost) getActivity()).navigateTo(new CastAWishFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new CastAWishFragment(), true);
         } else if (id == R.id.house_helper_menu) {
-            ((NavigationHost) getActivity()).navigateTo(new HousesHelperFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new HousesHelperFragment(), true);
         } else if (id == R.id.contact_manager_menu) {
-            ((NavigationHost) getActivity()).navigateTo(new ContactManagerFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new ContactManagerFragment(), true);
         } else if (id == R.id.privacy_terms) {
-            ((NavigationHost) getActivity()).navigateTo(new TermPrivacyFragment(), true);
+            ((NavigationHost) mActivity).navigateTo(new TermPrivacyFragment(), true);
         }
     }
 

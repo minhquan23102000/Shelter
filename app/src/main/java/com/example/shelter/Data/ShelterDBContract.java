@@ -210,22 +210,6 @@ public class ShelterDBContract {
                 "Gần siêu thị"
         };
 
-
-
-        /**
-         * State of this house in database
-         * Possible value for state
-         * STATE_VISIBLE = 1
-         * STATE_ABANDONED = 0
-         * STATE_TRUE_DEATH = -1
-         * <p>
-         * Type: INT
-         */
-        public final static String COLUMN_HOUSE_STATE = "state";
-        public final static int STATE_VISIBLE = 1;
-        public final static int STATE_ABANDONED = 0;
-        public final static int STATE_TRUE_DEATH = -1;
-
         public static String getPlaceName(int place) {
             switch (place) {
                 case NEAR_RIVER:
@@ -246,6 +230,27 @@ public class ShelterDBContract {
         public static boolean isValidPlace(int place) {
             return place >= 1 && place <= 5;
         }
+
+        /**
+         * State of this house in database
+         * Possible value for state
+         * STATE_VISIBLE = 1
+         * STATE_ABANDONED = 0
+         * STATE_TRUE_DEATH = -1
+         * <p>
+         * Type: INT
+         */
+        public final static String COLUMN_HOUSE_STATE = "state";
+        public final static int STATE_VISIBLE = 1;
+        public final static int STATE_ABANDONED = 0;
+        public final static int STATE_TRUE_DEATH = -1;
+
+        /**
+         * Number of view for this house
+         * <p>
+         * Type: INT
+         */
+        public static final String COLUMN_HOUSE_COUNT_VIEWS = "count_views";
 
 
     }
