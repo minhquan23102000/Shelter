@@ -376,7 +376,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                     salePriceTV.setText(houseSalePrice);
                     houseTypeTV.setText(houseTypeName);
                     houseAreaTV.setText(getString(R.string.area) + " " + houseArea + " m2");
-                    countViewsTV.setText(countViews + "views");
+                    countViewsTV.setText(countViews + " views");
 
                     String moreInfo = houseBedRooms + houseBathRooms + houseFloors +
                             houseYearBuilt + houseYardSize + housePlace;

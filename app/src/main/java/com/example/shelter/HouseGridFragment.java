@@ -517,6 +517,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
             ((NavigationHost) mActivity).navigateTo(new ContactManagerFragment(), true);
         } else if (id == R.id.privacy_terms) {
             ((NavigationHost) mActivity).navigateTo(new TermPrivacyFragment(), true);
+        } else if (id == R.id.shelter_statistics_menu) {
+            ((NavigationHost) mActivity).navigateTo(new ShelterStatisticsFragment(), true);
         }
     }
 

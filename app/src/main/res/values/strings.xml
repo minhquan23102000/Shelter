@@ -135,6 +135,7 @@
     <string name="call_me_at_">Call me at this phone number</string>
     <string name="house_content">House content</string>
     <string name="term_privacy">Privacy Policy for Shelter</string>
+    <string name="bar_chart_description_count_wish">Number of wishes that cast house types</string>
 
 
 </resources>
