@@ -55,4 +55,5 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     implementation 'com.github.roiacult:BackdropLayout:2.3'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
