@@ -1,6 +1,8 @@
 package com.example.shelter;
 
+import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -42,6 +44,10 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
     private static final int GET_LIST_HOUSE_NAMES_OWNERS_LOADER = 999;
     private static final int GET_LIST_USERS_ID_CONTACT_LOADER = 777;
     private static final int GET_LIST_USERS_DATA_LOADER = 888;
+    
+    //Context and Activity
+    private Context mContext;
+    private Activity mActivity;
 
     //Data
     private SessionManager sessionManager;
@@ -73,8 +79,11 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getContext());
-        imageRequester = new ImageRequester(getContext());
+        mActivity = getActivity();
+        mContext = getContext();
+
+        sessionManager = new SessionManager(mContext);
+        imageRequester = new ImageRequester(mContext);
     }
 
     @Override
@@ -92,23 +101,20 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
         houseNameSpinnerInputLayout = view.findViewById(R.id.spinner_house_name_text_input);
 
         contactsListView = view.findViewById(R.id.contacts_list);
-        listContactsAdapter = new ContactsAdapter(getContext(), null);
+        listContactsAdapter = new ContactsAdapter(mContext, null);
         contactsListView.setAdapter(listContactsAdapter);
         contactsListView.setEmptyView(null);
 
         //Set event on item change for houseNameSpinner
 
 
-        houseNameSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currentHouseId = Integer.parseInt(housesId.get(position));
-                LoaderManager.getInstance(ContactManagerFragment.this).restartLoader(GET_LIST_USERS_ID_CONTACT_LOADER, null, ContactManagerFragment.this);
-                imageRequester.loadHeaderImage(currentHouseId, HouseEntry.TABLE_NAME, contactHouseImageView);
-                houseNameTV.setText(housesName.get(position));
-                countContactsAlive = 0;
-                countContactsSolved = 0;
-            }
+        houseNameSpinner.setOnItemClickListener((parent, view1, position, id) -> {
+            currentHouseId = Integer.parseInt(housesId.get(position));
+            LoaderManager.getInstance(ContactManagerFragment.this).restartLoader(GET_LIST_USERS_ID_CONTACT_LOADER, null, ContactManagerFragment.this);
+            imageRequester.loadHeaderImage(currentHouseId, HouseEntry.TABLE_NAME, contactHouseImageView);
+            houseNameTV.setText(housesName.get(position));
+            countContactsAlive = 0;
+            countContactsSolved = 0;
         });
 
         return view;
@@ -127,7 +133,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
         String[] projection;
         CursorLoader cursorLoader = null;
         String selection;
-        String selectionArgs[];
+        String[] selectionArgs;
         Long userId = ContentUris.parseId(sessionManager.getUserUri());
 
         switch (id) {
@@ -140,7 +146,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 };
                 selection = RatingEntry.COLUMN_USER_ID + " = ? AND " + RatingEntry.COLUMN_STARS + " = ?";
                 selectionArgs = new String[]{userId.toString(), RatingEntry.HOUSE_OWNER.toString()};
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
@@ -158,7 +164,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 selection = HouseEntry._ID + " IN " + selection;
                 selection += " AND " + HouseEntry.COLUMN_HOUSE_STATE + " != " + HouseEntry.STATE_TRUE_DEATH;
                 Log.d(TAG, "onCreateLoader: " + selection);
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
@@ -176,7 +182,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 selection += " AND (" + RatingEntry.COLUMN_STARS + " = " + RatingEntry.SEND_CONTACT;
                 selection += " OR " + RatingEntry.COLUMN_STARS + " = " + RatingEntry.CONTACT_SOLVED + ")";
 
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
@@ -198,13 +204,15 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
                 selection = UserEntry._ID + " IN " + selection;
 
 
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         UserEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
                         null,                   // No selection arguments
                         null);// Default sort order
                 break;
+            default:
+                throw  new IllegalArgumentException("Illegal Loader ID for " + id);
         }
         return cursorLoader;
     }
@@ -237,7 +245,7 @@ public class ContactManagerFragment extends Fragment implements LoaderManager.Lo
 
                     String[] asArray = new String[housesName.size()];
                     housesName.toArray(asArray);
-                    spinnerHouseNameAdapter = new ArrayAdapter<>(getContext(), R.layout.dropdown_menu, asArray);
+                    spinnerHouseNameAdapter = new ArrayAdapter<>(mContext, R.layout.dropdown_menu, asArray);
                     houseNameSpinner.setText(spinnerHouseNameAdapter.getItem(0));
                     houseNameSpinner.setAdapter(spinnerHouseNameAdapter);
                     houseNameTV.setText(spinnerHouseNameAdapter.getItem(0));
