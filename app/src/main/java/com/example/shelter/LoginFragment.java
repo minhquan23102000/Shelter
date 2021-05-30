@@ -1,6 +1,8 @@
 package com.example.shelter;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,8 +17,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -38,20 +43,62 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class LoginFragment extends Fragment {
     static final public String TAG = LoginFragment.class.getSimpleName();
+
+    private Context mContext;
+    private Activity mActivity;
+
+    //Init intent launcher
+    private ActivityResultLauncher<Intent> someActivityResultLauncher;
+
+    //Third party sign in
     private GoogleSignInClient mGoogleSignInClient;
-    private final int RC_SIGN_IN = 120;
     private FirebaseAuth mAuth;
+
+    //Data
     private Uri userUri;
     private SessionManager sessionManager;
+    private Cursor currentUser;
+
+    //Views
     private TextInputEditText phoneEditText;
     private TextInputLayout phoneTextInput;
     private TextInputLayout passwordTextInput;
     private TextInputEditText passwordEditText;
-    private Cursor currentUser;
+    private TextView resetPasswordTV;
+
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        mContext = getContext();
+        someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    try {
+                        // Google Sign In was successful, authenticate with Firebase
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                        firebaseAuthWithGoogle(account.getIdToken());
+                    } catch (ApiException e) {
+                        // Google Sign In failed, update UI appropriately
+                        Log.w(TAG, "Google sign in failed", e);
+                        Toast.makeText(mContext, R.string.google_sign_in_failed, Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+    }
 
     @Nullable
     @Override
@@ -63,54 +110,37 @@ public class LoginFragment extends Fragment {
         phoneTextInput = view.findViewById(R.id.phone_text_input);
         phoneEditText = view.findViewById(R.id.phone_edit_text);
         MaterialButton nextButton = view.findViewById(R.id.next_button);
+        resetPasswordTV = view.findViewById(R.id.reset_password);
 
         mAuth = FirebaseAuth.getInstance();
-        sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(mContext);
 
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkLogin();
-            }
-        });
+        nextButton.setOnClickListener(v -> checkLogin());
 
         MaterialButton signUpButton = view.findViewById(R.id.sign_up_button);
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((NavigationHost) getActivity()).navigateTo(new SignUpFragment(), true);
-            }
-        });
+        signUpButton.setOnClickListener(v -> ((NavigationHost) mActivity).navigateTo(new SignUpFragment(), true));
 
-        phoneEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                phoneTextInput.setError(null);
-                return false;
-            }
+        resetPasswordTV.setOnClickListener(v -> ((NavigationHost) mActivity).navigateTo(new ResetPasswordFragment(), true));
+
+        phoneEditText.setOnKeyListener((view1, i, keyEvent) -> {
+            phoneTextInput.setError(null);
+            return false;
         });
-        passwordEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                passwordTextInput.setError(null);
-                return false;
-            }
+        passwordEditText.setOnKeyListener((v, keyCode, event) -> {
+            passwordTextInput.setError(null);
+            return false;
         });
 
         GoogleSignInOptions gso = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
+                .requestProfile()
                 .requestEmail()
                 .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(mContext, gso);
 
-        view.findViewById(R.id.google_login_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                googleSignIn();
-            }
-        });
+        view.findViewById(R.id.google_login_button).setOnClickListener(v -> googleSignIn());
 
         return view;
     }
@@ -129,7 +159,7 @@ public class LoginFragment extends Fragment {
         String selection = UserEntry.COLUMN_USER_PHONE + "=?";
         String selectionArgs[] = {phone};
 
-        currentUser = getContext().getContentResolver().query(UserEntry.CONTENT_URI, projection, selection, selectionArgs, null);
+        currentUser = mContext.getContentResolver().query(UserEntry.CONTENT_URI, projection, selection, selectionArgs, null);
         if (currentUser.moveToFirst()) {
             String passwordData = currentUser.getString(currentUser.getColumnIndex(UserEntry.COLUMN_USER_PASSWORD));
 
@@ -142,7 +172,7 @@ public class LoginFragment extends Fragment {
                         currentUserUri.toString(),
                         currentUser.getString(currentUser.getColumnIndex(UserEntry.COLUMN_USER_NAME)),
                         currentUser.getInt(currentUser.getColumnIndex(UserEntry.COLUMN_USER_ROLE_ID)));
-                ((NavigationHost) getActivity()).navigateTo(new HouseGridFragment(), false); // Navigate to the next Fragment
+                ((NavigationHost) mActivity).navigateTo(new HouseGridFragment(), false); // Navigate to the next Fragment
 
             }
         } else {
@@ -153,33 +183,14 @@ public class LoginFragment extends Fragment {
 
     private void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        someActivityResultLauncher.launch(signInIntent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -210,32 +221,30 @@ public class LoginFragment extends Fragment {
         values.put(UserEntry.COLUMN_USER_ROLE_ID, UserEntry.VIEWER);
 
         // If user does not exists, we insert else do nothing
-        if (!UserEntry.checkIfIsExists(email, UserEntry.COLUMN_USER_EMAIL, getContext().getApplicationContext(), getUserUriByEmail)
-                && !UserEntry.checkIfIsExists(phone, UserEntry.COLUMN_USER_PHONE, getContext().getApplicationContext())) {
+        if (!UserEntry.checkIfIsExists(email, UserEntry.COLUMN_USER_EMAIL, mContext.getApplicationContext(), getUserUriByEmail)
+                && !UserEntry.checkIfIsExists(phone, UserEntry.COLUMN_USER_PHONE, mContext.getApplicationContext())) {
 
             //Time to insert
             // This is a NEW user, so insert a new user into the provider,
             // returning the content URI for the new user.
-            userUri = getContext().getApplicationContext().getContentResolver().insert(UserEntry.CONTENT_URI, values);
+            userUri = mContext.getApplicationContext().getContentResolver().insert(UserEntry.CONTENT_URI, values);
         } else {
             //If email or phone exists we update it
             userUri = getUserUriByEmail[0];
-            getContext().getContentResolver().update(userUri, values, null, null);
+            mContext.getContentResolver().update(userUri, values, null, null);
             Log.d(TAG, "saveAccount: " + userUri);
         }
 
         // Show a toast message depending on whether or not the insertion was successful.
         if (userUri == null) {
             // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(getContext().getApplicationContext(), getString(R.string.error_saving_user_account), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext.getApplicationContext(), getString(R.string.error_saving_user_account), Toast.LENGTH_SHORT).show();
 
         } else {
             sessionManager.initUserSession(phone, email, userUri.toString(), name, 2);
-            ((NavigationHost) getActivity()).navigateTo(new HouseGridFragment(), false); // Navigate to the next Fragment
+            ((NavigationHost) mActivity).navigateTo(new HouseGridFragment(), false); // Navigate to the next Fragment
         }
     }
-
-
 
 
 }
