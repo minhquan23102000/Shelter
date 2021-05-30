@@ -126,24 +126,24 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
         Log.d(TAG, "House Uri: " + mHouseUri);
 
         //Find all needed view to display data
-        houseNameTV = (TextView) view.findViewById(R.id.house_name);
-        houseTypeTV = (TextView) view.findViewById(R.id.house_type);
-        rentCostTV = (TextView) view.findViewById(R.id.rent_price);
-        houseAddressTV = (TextView) view.findViewById(R.id.house_address);
+        houseNameTV = view.findViewById(R.id.house_name);
+        houseTypeTV = view.findViewById(R.id.house_type);
+        rentCostTV =  view.findViewById(R.id.rent_price);
+        houseAddressTV =  view.findViewById(R.id.house_address);
         houseAddressLabelTV = view.findViewById(R.id.house_address_label);
-        nearPointDistanceTV = (TextView) view.findViewById(R.id.near_point_distance);
-        salePriceTV = (TextView) view.findViewById(R.id.sale_price);
-        sendContactButton = (MaterialButton) view.findViewById(R.id.send_contact_button);
-        moreInfoTV = (TextView) view.findViewById(R.id.more_detail);
-        moreInfoTVLabel = (TextView) view.findViewById(R.id.mote_detail_label);
-        houseAreaTV = (TextView) view.findViewById(R.id.house_area);
+        nearPointDistanceTV =  view.findViewById(R.id.near_point_distance);
+        salePriceTV =  view.findViewById(R.id.sale_price);
+        sendContactButton =  view.findViewById(R.id.send_contact_button);
+        moreInfoTV =  view.findViewById(R.id.more_detail);
+        moreInfoTVLabel =  view.findViewById(R.id.mote_detail_label);
+        houseAreaTV =  view.findViewById(R.id.house_area);
         countViewsTV = view.findViewById(R.id.count_views);
 
         //Button
         sendContactButton = view.findViewById(R.id.send_contact_button);
         sendContactButton.setText(R.string.send_contact);
 
-        isFavouriteButton = (ImageButton) view.findViewById(R.id.favourite);
+        isFavouriteButton =  view.findViewById(R.id.favourite);
         isFavouriteButton.setTag(R.drawable.outline_favorite_border_24);
         isFavouriteButton.setImageResource(R.drawable.outline_favorite_border_24);
         isFavourite = false;
@@ -215,25 +215,24 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
         });
 
         //Alert Button
-        alertButton.setOnClickListener(v -> {
-            new MaterialAlertDialogBuilder(mContext)
-                    .setTitle(R.string.reporting_house)
-                    .setNeutralButton(R.string.cancel, (dialog, which) -> {
+        alertButton.setOnClickListener(v ->
+                new MaterialAlertDialogBuilder(mContext)
+                .setTitle(R.string.reporting_house)
+                .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-                    })
-                    .setSingleChoiceItems(chooseItems, 0, (dialog, which) -> checkItem = which)
-                    .setPositiveButton(R.string.report, (dialog, which) -> {
-                        Log.d(TAG, "onCreateView: " + checkItem);
-                        ContentValues values = new ContentValues();
-                        values.put(AlertEntry.COLUMN_ALERT_TOPIC_SELECT, checkItem);
-                        values.put(AlertEntry.COLUMN_CONTENT, AlertEntry.GET_TOPIC_SELECT_ITEM(checkItem, mContext));
-                        values.put(AlertEntry.COLUMN_HOUSE_ID, ContentUris.parseId(mHouseUri));
-                        values.put(AlertEntry.COLUMN_ALERT_STATE, AlertEntry.UNSOLVED);
-                        mContext.getContentResolver().insert(AlertEntry.CONTENT_URI, values);
-                        Toast.makeText(mContext, R.string.report_house_sucess, Toast.LENGTH_SHORT).show();
-                    })
-                    .show();
-        });
+                })
+                .setSingleChoiceItems(chooseItems, 0, (dialog, which) -> checkItem = which)
+                .setPositiveButton(R.string.report, (dialog, which) -> {
+                    Log.d(TAG, "onCreateView: " + checkItem);
+                    ContentValues values = new ContentValues();
+                    values.put(AlertEntry.COLUMN_ALERT_TOPIC_SELECT, checkItem);
+                    values.put(AlertEntry.COLUMN_CONTENT, AlertEntry.GET_TOPIC_SELECT_ITEM(checkItem, mContext));
+                    values.put(AlertEntry.COLUMN_HOUSE_ID, ContentUris.parseId(mHouseUri));
+                    values.put(AlertEntry.COLUMN_ALERT_STATE, AlertEntry.UNSOLVED);
+                    mContext.getContentResolver().insert(AlertEntry.CONTENT_URI, values);
+                    Toast.makeText(mContext, R.string.report_house_sucess, Toast.LENGTH_SHORT).show();
+                })
+                .show());
 
         return view;
     }
@@ -254,7 +253,7 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
         String[] projection;
         CursorLoader cursorLoader = null;
         String selection;
-        String selectionArgs[];
+        String[] selectionArgs;
         long userId = ContentUris.parseId(sessionManager.getUserUri());
         long houseId = ContentUris.parseId(mHouseUri);
         switch (id) {
@@ -299,7 +298,8 @@ public class HouseDetailFragment extends Fragment implements LoaderManager.Loade
                         selectionArgs,                   // No selection arguments
                         null);// Default sort order
                 break;
-
+            default:
+                throw new IllegalArgumentException("Illegal Loader ID: Loader id: " + id);
         }
 
 
