@@ -138,7 +138,7 @@ public class LoginFragment extends Fragment {
     private void checkLogin() {
         String phone = phoneEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
-        String projection[] = {
+        String[] projection = {
                 UserEntry._ID,
                 UserEntry.COLUMN_USER_EMAIL,
                 UserEntry.COLUMN_USER_PHONE,
@@ -147,7 +147,7 @@ public class LoginFragment extends Fragment {
                 UserEntry.COLUMN_USER_PASSWORD
         };
         String selection = UserEntry.COLUMN_USER_PHONE + "=?";
-        String selectionArgs[] = {phone};
+        String[] selectionArgs = {phone};
 
         currentUser = mContext.getContentResolver().query(UserEntry.CONTENT_URI, projection, selection, selectionArgs, null);
         if (currentUser.moveToFirst()) {
@@ -198,7 +198,6 @@ public class LoginFragment extends Fragment {
 
     protected void saveAccountWhenSignInWithGoogle() {
         //Get values to insert
-
         String name = mAuth.getCurrentUser().getDisplayName();
         String phone = mAuth.getCurrentUser().getPhoneNumber();
         String email = mAuth.getCurrentUser().getEmail();
