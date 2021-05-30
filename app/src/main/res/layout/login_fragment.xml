@@ -22,8 +22,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="16dp"
-            android:tint="?android:attr/textColorPrimary"
-            app:srcCompat="@drawable/shr_logo" />
+            app:srcCompat="@drawable/shr_logo"
+            app:tint="?android:attr/textColorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,7 +75,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:text="@string/button_next" />
 
             <com.google.android.material.button.MaterialButton
@@ -84,29 +83,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
-                android:layout_marginRight="12dp"
                 android:layout_toStartOf="@id/next_button"
-                android:layout_toLeftOf="@id/next_button"
                 android:text="@string/button_signUp" />
 
             <com.google.android.gms.common.SignInButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
+
             <Button
                 android:id="@+id/google_login_button"
+                style="@style/Widget.Shelter.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/next_button"
-                android:layout_alignParentRight="true"
-                android:text="Sign in with google"
-                style="@style/Widget.Shelter.Button.TextButton"
+                android:layout_alignParentEnd="true"
+                android:text="@string/sign_in_with_google"
                 app:icon="@drawable/googleg_standard_color_18"
                 app:iconGravity="textStart"
-                app:iconTint="#00100D0D"
                 app:iconPadding="10dp"
+                app:iconTint="#00100D0D"
                 app:iconTintMode="src_atop" />
 
+            <TextView
+                android:id="@+id/reset_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="12dp"
+                android:text="@string/reset_password"
+                android:textAppearance="?attr/textAppearanceSubtitle2"
+                android:textSize="12sp"
+                android:textStyle="italic" />
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>

@@ -6,14 +6,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,7 +21,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -35,18 +32,13 @@ import com.example.shelter.Data.SessionManager;
 import com.example.shelter.Data.ShelterDBContract;
 import com.example.shelter.Data.ShelterDBContract.HouseEntry;
 import com.example.shelter.Data.ShelterDBHelper;
+import com.example.shelter.staggeredgridlayout.HouseGridItemDecoration;
 import com.example.shelter.staggeredgridlayout.StaggeredHouseCardRecyclerViewAdapter;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.roacult.backdrop.BackdropLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HouseGridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     /**
@@ -224,30 +216,24 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
         toolbar.inflateMenu(R.menu.shr_toolbar_menu);
         toolbar.setOverflowIcon(AppCompatResources.getDrawable(mContext, R.drawable.shr_filter));
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.cheaper:
-                        sortOrder = HouseEntry.COLUMN_HOUSE_RENT_COST + " ASC";
-                        LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
-                        break;
-                    case R.id.name_a_z:
-                        sortOrder = HouseEntry.COLUMN_HOUSE_NAME + " ASC";
-                        LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
-                        break;
-                    case R.id.expire_wish:
-                        sessionManager.expireWishfulPointData();
-                        if (wishedHouses != null) {
-                            wishedHouses.clear();
-                            wishedHouses = null;
-                        }
-                        selectionForHouseLoader = null;
-                        LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
-                        break;
+        toolbar.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.cheaper) {
+                sortOrder = HouseEntry.COLUMN_HOUSE_RENT_COST + " ASC";
+                LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
+            } else if (itemId == R.id.name_a_z) {
+                sortOrder = HouseEntry.COLUMN_HOUSE_NAME + " ASC";
+                LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
+            } else if (itemId == R.id.expire_wish) {
+                sessionManager.expireWishfulPointData();
+                if (wishedHouses != null) {
+                    wishedHouses.clear();
+                    wishedHouses = null;
                 }
-                return true;
+                selectionForHouseLoader = null;
+                LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
             }
+            return true;
         });
 
 
@@ -255,7 +241,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         menu.clear();
         menuInflater.inflate(R.menu.shr_toolbar_menu, menu);
@@ -463,10 +449,10 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private void createMenuItem(View view) {
 
         //House Viewer
-        signOutMenu = (MaterialButton) view.findViewById(R.id.sign_out_menu);
-        castAWishMenu = (MaterialButton) view.findViewById(R.id.cast_a_wish_menu);
-        yourFavouriteMenu = (MaterialButton) view.findViewById(R.id.your_favourite_menu);
-        myAccountMenu = (MaterialButton) view.findViewById(R.id.my_account_menu);
+        signOutMenu = view.findViewById(R.id.sign_out_menu);
+        castAWishMenu = view.findViewById(R.id.cast_a_wish_menu);
+        yourFavouriteMenu = view.findViewById(R.id.your_favourite_menu);
+        myAccountMenu = view.findViewById(R.id.my_account_menu);
         final MaterialButton termPrivacyMenu = view.findViewById(R.id.privacy_terms);
 
         signOutMenu.setOnClickListener(this);
@@ -480,13 +466,14 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         termPrivacyMenu.setOnClickListener(this);
 
         //House Owner
-        houseHelperMenu = (MaterialButton) view.findViewById(R.id.house_helper_menu);
-        shelterStatisticMenu = (MaterialButton) view.findViewById(R.id.shelter_statistics_menu);
+        houseHelperMenu = view.findViewById(R.id.house_helper_menu);
+        shelterStatisticMenu = view.findViewById(R.id.shelter_statistics_menu);
         final MaterialButton contactManagerMenu = view.findViewById(R.id.contact_manager_menu);
 
-        if (sessionManager.getUserRole() == ShelterDBContract.UserEntry.VIEWER) {
+        if (sessionManager.getUserRole().intValue() == ShelterDBContract.UserEntry.VIEWER.intValue()) {
             houseHelperMenu.setVisibility(View.GONE);
             shelterStatisticMenu.setVisibility(View.GONE);
+            contactManagerMenu.setVisibility(View.GONE);
         } else {
             houseHelperMenu.setOnClickListener(this);
             shelterStatisticMenu.setOnClickListener(this);
@@ -500,7 +487,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.sign_out_menu) {
-
             sessionManager.clearUserSession();
             sessionManager.clearGlobalDataSession();
             ((NavigationHost) mActivity).navigateTo(new LoginFragment(), false);
@@ -628,14 +614,14 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         }
 
 
-        String debugSelectionArgs = "";
+        StringBuilder debugSelectionArgs = new StringBuilder();
         if (selectionArgsForWishLoader != null) {
             for (String s : selectionArgsForWishLoader) {
-                debugSelectionArgs += " " + s;
+                debugSelectionArgs.append(" ").append(s);
             }
         }
 
-        Log.d(TAG, "constructCastWishQuery: query: " + selectionForWishLoader + " --- data: + " + debugSelectionArgs);
+        Log.d(TAG, "constructCastWishQuery: query: " + selectionForWishLoader + " --- data: + " + debugSelectionArgs.toString());
     }
 
 

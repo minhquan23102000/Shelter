@@ -136,6 +136,9 @@
     <string name="house_content">House content</string>
     <string name="term_privacy">Privacy Policy for Shelter</string>
     <string name="bar_chart_description_count_wish">Number of wishes that cast house types</string>
+    <string name="reset_password">Reset password</string>
+    <string name="google_sign_in_failed">Google sign in failed, please check your network and try again!</string>
+    <string name="sign_in_with_google">Sign in with google</string>
 
 
 </resources>

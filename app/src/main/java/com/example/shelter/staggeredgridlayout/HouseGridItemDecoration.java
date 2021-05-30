@@ -1,4 +1,4 @@
-package com.example.shelter;
+package com.example.shelter.staggeredgridlayout;
 
 import android.graphics.Rect;
 import android.view.View;

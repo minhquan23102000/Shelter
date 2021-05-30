@@ -177,6 +177,7 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
     public void onResume() {
         super.onResume();
         LoaderManager.getInstance(this).initLoader(USER_LOADER, null, this);
+        //If verify phone pass back that is verify phone is true, than we save this account;
         if (sessionManager.getIsVerifyPhone()) {
             saveAccount();
         }
@@ -210,126 +211,120 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     private void setErrorInputCheck() {
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean flag = true;
+        nextButton.setOnClickListener(v -> {
+            boolean flag = true;
 
-                //Get data from UI
-                Editable phone = phoneEditText.getText();
-                String phoneString = null;
-                if (phone != null && phone.length() > 0) {
-                    phoneString = phone.toString().trim();
-                }
-                Editable email = emailEditText.getText();
+            //Get data from UI
+            Editable phone = phoneEditText.getText();
+            String phoneString = null;
+            if (phone != null && phone.length() > 0) {
+                phoneString = phone.toString().trim();
+            }
+            Editable email = emailEditText.getText();
 
-                //Get phone and email from database
-                String phoneInData = userData.getString(userData.getColumnIndex(UserEntry.COLUMN_USER_PHONE));
-                String emailInData = userData.getString(userData.getColumnIndex(UserEntry.COLUMN_USER_EMAIL));
+            //Get phone and email from database
+            String phoneInData = userData.getString(userData.getColumnIndex(UserEntry.COLUMN_USER_PHONE));
+            String emailInData = userData.getString(userData.getColumnIndex(UserEntry.COLUMN_USER_EMAIL));
 
 
-                if (!UserEntry.isNameValid(nameEditText.getText())) {
-                    nameInputLayout.setError(getString(R.string.name_error_check));
-                    flag = false;
+            if (!UserEntry.isNameValid(nameEditText.getText())) {
+                nameInputLayout.setError(getString(R.string.name_error_check));
+                flag = false;
+            } else {
+                nameInputLayout.setError(null);
+            }
+
+            if (!UserEntry.isEmailValid(email)) {
+                emailInputLayout.setError(getString(R.string.email_error_check));
+                flag = false;
+            } else if (UserEntry.checkIfIsExists(email.toString().trim(), UserEntry.COLUMN_USER_EMAIL, getContext())
+                    && !email.toString().trim().equals(emailInData)) {
+                emailInputLayout.setError(getString(R.string.email_already_exists));
+                flag = false;
+            }else {
+                emailInputLayout.setError(null);
+            }
+
+            if (!UserEntry.isPhoneValid(phone) ) {
+                phoneInputLayout.setError(getString(R.string.phone_error_check));
+                flag = false;
+            } else if (UserEntry.checkIfIsExists(phoneString, UserEntry.COLUMN_USER_PHONE, getContext())
+                    && !phoneString.equals(phoneInData) ) {
+                phoneInputLayout.setError(getString(R.string.phone_already_exists));
+                flag = false;
+
+            } else {
+                phoneInputLayout.setError(null);
+            }
+
+            if (!UserEntry.isDateBirthValid(dateEditText.getText())) {
+                dateInputLayout.setError(getString(R.string.date_birth_error_check));
+                flag = false;
+            } else {
+                dateInputLayout.setError(null);
+            }
+
+            if (!UserEntry.isIncomeValid(incomeEditText.getText())) {
+                incomeInputLayout.setError(getString(R.string.income_error_check));
+                flag = false;
+            } else {
+                incomeInputLayout.setError(null);
+            }
+
+            //If all data are valid,
+            if (flag) {
+                Log.d(LOG_TAG, "onClick: " + phoneString + "---" + phoneInData);
+                //Init temp data for deliver to another fragment
+                sessionManager.initUserTempData(phoneString, email.toString().trim(),
+                        nameEditText.getText().toString().trim(),
+                        Float.parseFloat(incomeEditText.getText().toString().trim()),
+                        dateEditText.getText().toString().trim(),
+                        genderAdapter.getPosition(autoCompleteTextView.getText().toString().trim()));
+
+                //If user input a new phone we navigate to verify fragment else we save account directly
+                if (!phoneString.equals(phoneInData) ) {
+                    sessionManager.setVerifyPhone(false);
+                    Fragment toFragment = VerifyFragment.NewInstance(phoneString, LOG_TAG);
+                    ((NavigationHost) getActivity()).navigateTo(toFragment, true);
                 } else {
-                    nameInputLayout.setError(null);
+                    saveAccount();
                 }
 
-                if (!UserEntry.isEmailValid(email)) {
-                    emailInputLayout.setError(getString(R.string.email_error_check));
-                    flag = false;
-                } else if (UserEntry.checkIfIsExists(email.toString().trim(), UserEntry.COLUMN_USER_EMAIL, getContext())
-                        && !email.toString().trim().equals(emailInData)) {
-                    emailInputLayout.setError(getString(R.string.email_already_exists));
-                    flag = false;
-                }else {
-                    emailInputLayout.setError(null);
-                }
-
-                if (!UserEntry.isPhoneValid(phone) ) {
-                    phoneInputLayout.setError(getString(R.string.phone_error_check));
-                    flag = false;
-                } else if (UserEntry.checkIfIsExists(phoneString, UserEntry.COLUMN_USER_PHONE, getContext())
-                        && !phoneString.equals(phoneInData) ) {
-                    phoneInputLayout.setError(getString(R.string.phone_already_exists));
-                    flag = false;
-
-                } else {
-                    phoneInputLayout.setError(null);
-                }
-
-                if (!UserEntry.isDateBirthValid(dateEditText.getText())) {
-                    dateInputLayout.setError(getString(R.string.date_birth_error_check));
-                    flag = false;
-                } else {
-                    dateInputLayout.setError(null);
-                }
-
-                if (!UserEntry.isIncomeValid(incomeEditText.getText())) {
-                    incomeInputLayout.setError(getString(R.string.income_error_check));
-                    flag = false;
-                } else {
-                    incomeInputLayout.setError(null);
-                }
-
-                //If all data are valid,
-                if (flag) {
-                    Log.d(LOG_TAG, "onClick: " + phoneString + "---" + phoneInData);
-                    //Init temp data for deliver to another fragment
-                    sessionManager.initUserTempData(phoneString, email.toString().trim(),
-                            nameEditText.getText().toString().trim(),
-                            Float.parseFloat(incomeEditText.getText().toString().trim()),
-                            dateEditText.getText().toString().trim(),
-                            genderAdapter.getPosition(autoCompleteTextView.getText().toString().trim()));
-
-                    //If user input a new phone we navigate to verify fragment else we save account directly
-                    if (!phoneString.equals(phoneInData) ) {
-                        sessionManager.setVerifyPhone(false);
-                        Fragment toFragment = VerifyFragment.NewInstance(phoneString, LOG_TAG);
-                        ((NavigationHost) getActivity()).navigateTo(toFragment, true);
-                    } else {
-                        saveAccount();
-                    }
-
-                }
             }
         });
 
 
 
         // Listen user's typing. Clear the error when valid
-        onKeyListener = new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                switch (v.getId()) {
-                    case R.id.name_edit_text:
-                        if (UserEntry.isNameValid(nameEditText.getText())) {
-                            nameInputLayout.setError(null); //Clear the error
-                        }
-                        break;
-                    case R.id.phone_edit_text:
-                        if (UserEntry.isPhoneValid(phoneEditText.getText())) {
-                            phoneInputLayout.setError(null);
-                        }
-                        break;
-                    case R.id.date_of_birth_edit_text:
-                        if (UserEntry.isDateBirthValid(dateEditText.getText())) {
-                            dateInputLayout.setError(null); //Clear the error
-                        }
-                        break;
-                    case R.id.email_edit_text:
-                        if (UserEntry.isEmailValid(emailEditText.getText())) {
-                            emailInputLayout.setError(null);
-                        }
-                        break;
-                    case R.id.income_edit_text:
-                        if (UserEntry.isIncomeValid(incomeEditText.getText())) {
-                            incomeInputLayout.setError(null);
-                        }
-                        break;
-                }
-                return false;
+        onKeyListener = (v, keyCode, event) -> {
+            switch (v.getId()) {
+                case R.id.name_edit_text:
+                    if (UserEntry.isNameValid(nameEditText.getText())) {
+                        nameInputLayout.setError(null); //Clear the error
+                    }
+                    break;
+                case R.id.phone_edit_text:
+                    if (UserEntry.isPhoneValid(phoneEditText.getText())) {
+                        phoneInputLayout.setError(null);
+                    }
+                    break;
+                case R.id.date_of_birth_edit_text:
+                    if (UserEntry.isDateBirthValid(dateEditText.getText())) {
+                        dateInputLayout.setError(null); //Clear the error
+                    }
+                    break;
+                case R.id.email_edit_text:
+                    if (UserEntry.isEmailValid(emailEditText.getText())) {
+                        emailInputLayout.setError(null);
+                    }
+                    break;
+                case R.id.income_edit_text:
+                    if (UserEntry.isIncomeValid(incomeEditText.getText())) {
+                        incomeInputLayout.setError(null);
+                    }
+                    break;
             }
+            return false;
         };
         passwordEditText.setOnKeyListener(this.onKeyListener);
         confirmPasswordEditText.setOnKeyListener(this.onKeyListener);

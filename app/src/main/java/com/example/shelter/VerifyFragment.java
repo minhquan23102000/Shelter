@@ -1,5 +1,7 @@
 package com.example.shelter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -34,7 +36,10 @@ public class VerifyFragment extends Fragment {
     static final public String TAG = VerifyFragment.class.getSimpleName();
     static final public String KEY_USER_PHONE = "userPhone";
     static final public String KEY_PRE_FRAGMENT = "fragment";
-
+    
+    private Context mContext;
+    private Activity mActivity;
+    
     private String userPhone;
     private String preFragmentTag = "";
     private String verificationCodeGenerated;
@@ -57,6 +62,8 @@ public class VerifyFragment extends Fragment {
     @Override
     public void onCreate(@Nullable  Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getContext();
+        mActivity = getActivity();
         if (getArguments() != null) {
             userPhone = getArguments().getString(KEY_USER_PHONE, null);
             preFragmentTag = getArguments().getString(KEY_PRE_FRAGMENT, null);
@@ -70,9 +77,9 @@ public class VerifyFragment extends Fragment {
         MaterialButton verifyButton = view.findViewById(R.id.verify_button);
         verifyEditText = view.findViewById(R.id.verify_edit_text);
         verifyInputLayout = view.findViewById(R.id.verify_text_input);
-        sessionManager = new SessionManager(getContext());
+        sessionManager = new SessionManager(mContext);
         timer = view.findViewById(R.id.timer);
-
+        Log.d(TAG, "onCreateView: userPhone " + userPhone);
         verifyButton.setOnClickListener(view1 -> {
 
             String code = verifyEditText.getText().toString();
@@ -94,7 +101,7 @@ public class VerifyFragment extends Fragment {
                 PhoneAuthOptions.newBuilder()
                         .setPhoneNumber("+84" + userPhone)       // Phone number to verify
                         .setTimeout(120L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(getActivity())                 // Activity (for callback binding)
+                        .setActivity(mActivity)                 // Activity (for callback binding)
                         .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
                         .build();
         PhoneAuthProvider.verifyPhoneNumber(options);
@@ -109,7 +116,7 @@ public class VerifyFragment extends Fragment {
             public void onFinish() {
                 if (!isVerify) {
                     getParentFragmentManager().popBackStack();
-                    Toast.makeText(getContext(), R.string.verify_time_out, Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, R.string.verify_time_out, Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -137,7 +144,7 @@ public class VerifyFragment extends Fragment {
             // This callback is invoked in an invalid request for verification is made,
             // for instance if the the phone number format is not valid.
             Log.w(TAG, "onVerificationFailed", e);
-            Toast.makeText(getActivity(), getString(R.string.phone_is_not_valid), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, e.getMessage(), Toast.LENGTH_SHORT).show();
             getParentFragmentManager().popBackStack();
         }
 
@@ -157,25 +164,25 @@ public class VerifyFragment extends Fragment {
 
     private void verifyCode(String code) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCodeGenerated, code);
-        MainActivity.mAuth.signInWithCredential(credential).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+        MainActivity.mAuth.signInWithCredential(credential).addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     isVerify = true;
                     //if this is my account fragment, then we navigate back to my account fragment
-                    if (preFragmentTag.equals(MyAccountFragment.LOG_TAG)) {
+                    if (preFragmentTag.equals(MyAccountFragment.LOG_TAG) || preFragmentTag.equals(ResetPasswordFragment.TAG)) {
                         sessionManager.setVerifyPhone(isVerify);
                         getParentFragmentManager().popBackStack();
                     } else {
                         // if this is sign up fragment the nwe navigate to house grid fragment
-                        Toast.makeText(getContext().getApplicationContext(), getString(R.string.sign_up_successfully), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), getString(R.string.sign_up_successfully), Toast.LENGTH_SHORT).show();
                         // Sign up successfully, pop all the fragment in backStack then navigate to HouseGridFragment
                         getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        ((NavigationHost) getActivity()).navigateTo(new HouseGridFragment(), false);
+                        ((NavigationHost) mActivity).navigateTo(new HouseGridFragment(), false);
                     }
 
                 } else {
-                    Toast.makeText(getContext(), R.string.verify_code_is_not_valid, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.verify_code_is_not_valid, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -188,7 +195,7 @@ public class VerifyFragment extends Fragment {
             Uri userUri = sessionManager.getUserUri();
             if (userUri != null) {
                 //delete data and navigate back to sign up fragment
-                getActivity().getContentResolver().delete(userUri, null, null);
+                mActivity.getContentResolver().delete(userUri, null, null);
             }
             sessionManager.clearUserSession();
         }
