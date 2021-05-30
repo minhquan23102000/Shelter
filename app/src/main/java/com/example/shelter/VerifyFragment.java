@@ -18,13 +18,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.shelter.data.SessionManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -163,28 +160,25 @@ public class VerifyFragment extends Fragment {
 
     private void verifyCode(String code) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCodeGenerated, code);
-        MainActivity.mAuth.signInWithCredential(credential).addOnCompleteListener(mActivity, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    isVerify = true;
-                    //if this is my account fragment, then we navigate back to my account fragment
-                    if (preFragmentTag.equals(MyAccountFragment.LOG_TAG) || preFragmentTag.equals(ResetPasswordFragment.TAG)) {
-                        sessionManager.setVerifyPhone(isVerify);
-                        getParentFragmentManager().popBackStack();
-                    } else {
-                        // if this is sign up fragment the nwe navigate to house grid fragment
-                        Toast.makeText(mContext.getApplicationContext(), getString(R.string.sign_up_successfully), Toast.LENGTH_SHORT).show();
-                        // Sign up successfully, pop all the fragment in backStack then navigate to HouseGridFragment
-                        getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                        ((NavigationHost) mActivity).navigateTo(new HouseGridFragment(), false);
-                    }
-
+        MainActivity.mAuth.signInWithCredential(credential).addOnCompleteListener(mActivity, task -> {
+            if (task.isSuccessful()) {
+                isVerify = true;
+                //if this is my account fragment, then we navigate back to my account fragment
+                if (preFragmentTag.equals(MyAccountFragment.LOG_TAG) || preFragmentTag.equals(ResetPasswordFragment.TAG)) {
+                    sessionManager.setVerifyPhone(isVerify);
+                    getParentFragmentManager().popBackStack();
                 } else {
-                    Toast.makeText(mContext, R.string.verify_code_is_not_valid, Toast.LENGTH_SHORT).show();
+                    // if this is sign up fragment the nwe navigate to house grid fragment
+                    Toast.makeText(mContext.getApplicationContext(), getString(R.string.sign_up_successfully), Toast.LENGTH_SHORT).show();
+                    // Sign up successfully, pop all the fragment in backStack then navigate to HouseGridFragment
+                    getParentFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    ((NavigationHost) mActivity).navigateTo(new HouseGridFragment(), false);
                 }
 
+            } else {
+                Toast.makeText(mContext, R.string.verify_code_is_not_valid, Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 
