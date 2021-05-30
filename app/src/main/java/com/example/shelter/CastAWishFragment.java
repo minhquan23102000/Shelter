@@ -1,7 +1,9 @@
 package com.example.shelter;
 
+import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
@@ -38,6 +40,10 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
     public static final String TAG = CastAWishFragment.class.getName();
     //ID FOR LOADERS
     private static final int HOUSE_TYPE_LOADER = 734;
+
+    private Context mContext;
+    private Activity mActivity;
+
     //Session
     private SessionManager sessionManager;
     //Declare all views in this layout
@@ -64,7 +70,14 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
 
     private ArrayAdapter<String> placeAdapter;
     private ArrayAdapter<String> houseTypeAdapter;
-    private List<String> houseTypeList;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        mContext = getContext();
+        sessionManager = new SessionManager(mContext);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,146 +113,131 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        //Init session manger
-        sessionManager = new SessionManager(getContext());
 
         //Set  wishfulPoint text view on start icon click to navigate to MapFragment
-        wishfulPointInputLayout.setStartIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //If session has not yet located wishfulPoint we navigate to MapFragment
-                //Else we clear it and set text to null
-                if (sessionManager.getWishfulPointName() == null) {
-                   double latPoint, lngPoint;
-                    try {
-                      latPoint = MainActivity.getUserLocation().getLatitude();
-                      lngPoint = MainActivity.getUserLocation().getLongitude();
-                    } catch (NullPointerException e) {
-                       latPoint = MapsFragment.LAND_MARK_TOWER.latitude;
-                       lngPoint = MapsFragment.LAND_MARK_TOWER.longitude;
-                    }
-                    Fragment mapFragment = MapsFragment.NewInstance(CastAWishFragment.TAG, latPoint, lngPoint);
-
-                    ((MainActivity) getActivity()).navigateTo(mapFragment, true);
-                    wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_clear_24);
-                } else {
-                    sessionManager.clearWishfulPoint();
-                    wishfulPointEditText.setText(null);
-                    wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_place_24);
+        wishfulPointInputLayout.setStartIconOnClickListener(v -> {
+            //If session has not yet located wishfulPoint we navigate to MapFragment
+            //Else we clear it and set text to null
+            if (sessionManager.getWishfulPointName() == null) {
+                double latPoint, lngPoint;
+                try {
+                    latPoint = MainActivity.getUserLocation().getLatitude();
+                    lngPoint = MainActivity.getUserLocation().getLongitude();
+                } catch (NullPointerException e) {
+                    latPoint = MapsFragment.LAND_MARK_TOWER.latitude;
+                    lngPoint = MapsFragment.LAND_MARK_TOWER.longitude;
                 }
+                Fragment mapFragment = MapsFragment.NewInstance(CastAWishFragment.TAG, latPoint, lngPoint);
+                ((MainActivity) mActivity).navigateTo(mapFragment, true);
+            } else {
+                sessionManager.clearWishfulPoint();
+                wishfulPointEditText.setText(null);
+                wishfulPointInputLayout.setStartIconDrawable(R.drawable.outline_place_24);
             }
         });
 
         //Set on click for the buttons
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager().popBackStackImmediate();
+        backButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        castYourWishButton.setOnClickListener(v -> {
+            //get place value from UI
+            int place = placeAdapter.getPosition(placeText.getText().toString().trim());
+
+            //get houseType value from UI then query its ID from database
+            String houseTypeName = houseTypeAdapter.getItem(houseTypeAdapter.getPosition(houseTypeText.getText().toString().trim())).trim();
+            int houseTypeId = 0;
+            Cursor houseTypeCursor = mContext.getContentResolver().query(HouseTypeEntry.CONTENT_URI,
+                    null,
+                    HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME + " = ?",
+                    new String[]{houseTypeName},
+                    null);
+
+            if (houseTypeCursor.moveToFirst()) {
+                houseTypeId = houseTypeCursor.getInt(houseTypeCursor.getColumnIndex(HouseTypeEntry._ID));
             }
-        });
-        castYourWishButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //get place value from UI
-                int place = placeAdapter.getPosition(placeText.getText().toString().trim());
+            Log.d(TAG, "onClick: houseType Query check " + houseTypeId + " " + houseTypeName);
 
-                //get houseType value from UI then query its ID from database
-                String houseTypeName = houseTypeAdapter.getItem(houseTypeAdapter.getPosition(houseTypeText.getText().toString().trim())).trim();
-                int houseTypeId  = 0;
-                Cursor houseTypeCursor = getContext().getContentResolver().query(HouseTypeEntry.CONTENT_URI,
-                        null,
-                        HouseTypeEntry.COLUMN_HOUSE_TYPE_NAME + " = ?",
-                        new String[] {houseTypeName},
-                        null);
+            houseTypeCursor.close();  //close the cursor
 
-                if (houseTypeCursor.moveToFirst()) {
-                    houseTypeId = houseTypeCursor.getInt(houseTypeCursor.getColumnIndex(HouseTypeEntry._ID));
-                }
-                Log.d(TAG, "onClick: houseType Query check " + houseTypeId + " " + houseTypeName);
+            //get the rest of values
+            float area, rentCost, salePrice;
+            int floor, bedrooms, bathrooms, yearBuilt;
+            String areaString = areaEditText.getText().toString();
+            String floorString = floorEditText.getText().toString();
+            String bedroomsString = bedRoomsEditText.getText().toString();
+            String bathroomsString = bathRoomsEditText.getText().toString();
+            String yearBuiltString = yearBuiltEditText.getText().toString();
+            String rentCostString = rentCostEditText.getText().toString();
+            String salePriceString = salePriceEditText.getText().toString();
 
-                houseTypeCursor.close();  //close the cursor
-
-                //get the rest of values
-                float area, rentCost, salePrice;
-                int floor, bedrooms, bathrooms, yearBuilt;
-                String areaString = areaEditText.getText().toString();
-                String floorString = floorEditText.getText().toString();
-                String bedroomsString = bedRoomsEditText.getText().toString();
-                String bathroomsString = bathRoomsEditText.getText().toString();
-                String yearBuiltString = yearBuiltEditText.getText().toString();
-                String rentCostString = rentCostEditText.getText().toString();
-                String salePriceString = salePriceEditText.getText().toString();
-
-                //Check if text is empty, then set it to zero, else get the value
-                if (TextUtils.isEmpty(areaString)) {
-                    area = 0;
-                } else {
-                    area = Float.parseFloat(areaString);
-                }
-
-                if (TextUtils.isEmpty(floorString)) {
-                    floor = 0;
-                } else {
-                    floor = Integer.parseInt(floorString);
-                }
-
-                if (TextUtils.isEmpty(bathroomsString)) {
-                    bathrooms = 0;
-                } else {
-                    bathrooms = Integer.parseInt(bathroomsString);
-                }
-                if (TextUtils.isEmpty(bedroomsString)) {
-                    bedrooms = 0;
-                } else {
-                    bedrooms = Integer.parseInt(bedroomsString);
-                }
-                if (TextUtils.isEmpty(yearBuiltString)) {
-                    yearBuilt = 0;
-                } else {
-                    yearBuilt = Integer.parseInt(yearBuiltString);
-                }
-                if (TextUtils.isEmpty(salePriceString)) {
-                    salePrice = 0;
-                } else {
-                    salePrice = Float.parseFloat(salePriceString);
-                }
-                if (TextUtils.isEmpty(rentCostString)) {
-                    rentCost = 0;
-                } else {
-                    rentCost = Float.parseFloat(rentCostString);
-                }
-
-
-                //Wishful point name and LatLng is already put into session in maps fragment so we don't do it here anymore;
-
-                //Put them into session
-                sessionManager.initWishfulPointData(place, houseTypeId, area, yearBuilt, floor, bedrooms, bathrooms, salePrice, rentCost);
-                //Add them to database
-                ContentValues values = new ContentValues();
-                values.put(WishEntry.COLUMN_WISH_PLACE, place);
-                if (houseTypeId > 0) {
-                    values.put(WishEntry.COLUMN_HOUSE_TYPE_ID, houseTypeId);
-                }
-                values.put(WishEntry.COLUMN_WISH_AREA, area);
-                values.put(WishEntry.COLUMN_WISH_YEAR_BUILT, yearBuilt);
-                values.put(WishEntry.COLUMN_WISH_FLOORS, floor);
-                values.put(WishEntry.COLUMN_WISH_BED_ROOMS, bedrooms);
-                values.put(WishEntry.COLUMN_WISH_BATH_ROOMS, bathrooms);
-                values.put(WishEntry.COLUMN_NEAR_POINT_LATITUDE, sessionManager.getWishfulPointLatLng().latitude);
-                values.put(WishEntry.COLUMN_NEAR_POINT_LONGITUDE, sessionManager.getWishfulPointLatLng().longitude);
-                values.put(WishEntry.COLUMN_USER_ID, ContentUris.parseId(sessionManager.getUserUri()));
-                getContext().getContentResolver().insert(WishEntry.CONTENT_URI, values);
-
-                //Add a wish relative to the house type table
-                ShelterDBHelper.increaseValueToOne(HouseTypeEntry.TABLE_NAME, HouseTypeEntry.COLUMN_HOUSE_COUNT_WISH,
-                                    sessionManager.getWishfulPointHouseType(), getContext());
-
-                //Back to house grid fragment
-                if (CastAWishFragment.this.isAdded()) {
-                    getParentFragmentManager().popBackStackImmediate();
-                }
-
+            //Check if text is empty, then set it to zero, else get the value
+            if (TextUtils.isEmpty(areaString)) {
+                area = 0;
+            } else {
+                area = Float.parseFloat(areaString);
             }
+
+            if (TextUtils.isEmpty(floorString)) {
+                floor = 0;
+            } else {
+                floor = Integer.parseInt(floorString);
+            }
+
+            if (TextUtils.isEmpty(bathroomsString)) {
+                bathrooms = 0;
+            } else {
+                bathrooms = Integer.parseInt(bathroomsString);
+            }
+            if (TextUtils.isEmpty(bedroomsString)) {
+                bedrooms = 0;
+            } else {
+                bedrooms = Integer.parseInt(bedroomsString);
+            }
+            if (TextUtils.isEmpty(yearBuiltString)) {
+                yearBuilt = 0;
+            } else {
+                yearBuilt = Integer.parseInt(yearBuiltString);
+            }
+            if (TextUtils.isEmpty(salePriceString)) {
+                salePrice = 0;
+            } else {
+                salePrice = Float.parseFloat(salePriceString);
+            }
+            if (TextUtils.isEmpty(rentCostString)) {
+                rentCost = 0;
+            } else {
+                rentCost = Float.parseFloat(rentCostString);
+            }
+
+
+            //Wishful point name and LatLng is already put into session in maps fragment so we don't do it here anymore;
+
+            //Put them into session
+            sessionManager.initWishfulPointData(place, houseTypeId, area, yearBuilt, floor, bedrooms, bathrooms, salePrice, rentCost);
+            //Add them to database
+            ContentValues values = new ContentValues();
+            values.put(WishEntry.COLUMN_WISH_PLACE, place);
+            if (houseTypeId > 0) {
+                values.put(WishEntry.COLUMN_HOUSE_TYPE_ID, houseTypeId);
+            }
+            values.put(WishEntry.COLUMN_WISH_AREA, area);
+            values.put(WishEntry.COLUMN_WISH_YEAR_BUILT, yearBuilt);
+            values.put(WishEntry.COLUMN_WISH_FLOORS, floor);
+            values.put(WishEntry.COLUMN_WISH_BED_ROOMS, bedrooms);
+            values.put(WishEntry.COLUMN_WISH_BATH_ROOMS, bathrooms);
+            values.put(WishEntry.COLUMN_NEAR_POINT_LATITUDE, sessionManager.getWishfulPointLatLng().latitude);
+            values.put(WishEntry.COLUMN_NEAR_POINT_LONGITUDE, sessionManager.getWishfulPointLatLng().longitude);
+            values.put(WishEntry.COLUMN_USER_ID, ContentUris.parseId(sessionManager.getUserUri()));
+            mContext.getContentResolver().insert(WishEntry.CONTENT_URI, values);
+
+            //Add a wish relative to the house type table
+            ShelterDBHelper.increaseValueToOne(HouseTypeEntry.TABLE_NAME, HouseTypeEntry.COLUMN_HOUSE_COUNT_WISH,
+                    sessionManager.getWishfulPointHouseType(), mContext);
+
+            //Back to house grid fragment
+            if (CastAWishFragment.this.isAdded()) {
+                getParentFragmentManager().popBackStack();
+            }
+
         });
     }
 
@@ -247,7 +245,7 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
     public void onResume() {
         super.onResume();
         //Kick the loader when the view is visible to the user
-        LoaderManager.getInstance(this).initLoader(HOUSE_TYPE_LOADER, null ,this);
+        LoaderManager.getInstance(this).initLoader(HOUSE_TYPE_LOADER, null, this);
 
         //Display last user's wishful point  if exists
         String mapFragmentReturnPlaceName = sessionManager.getWishfulPointName();
@@ -260,7 +258,7 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
         }
 
         //Set adapter for the spinner
-        placeAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
+        placeAdapter = new ArrayAdapter<>(mContext, R.layout.dropdown_menu, HouseEntry.POSSIBLE_VALUE_PLACES);
         placeText.setAdapter(placeAdapter);
     }
 
@@ -268,17 +266,14 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         CursorLoader cursorLoader = null;
-        switch (id) {
-            case HOUSE_TYPE_LOADER:
 
-                cursorLoader = new CursorLoader(getContext(),
-                        HouseTypeEntry.CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-                break;
-        }
+        cursorLoader = new CursorLoader(mContext,
+                HouseTypeEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+
         return cursorLoader;
     }
 
@@ -286,7 +281,7 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case HOUSE_TYPE_LOADER:
-                houseTypeList = new ArrayList<>();
+                List<String> houseTypeList = new ArrayList<>();
                 houseTypeList.add("Any");
                 if (data.moveToFirst()) {
                     do {
@@ -294,7 +289,7 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
                     } while (data.moveToNext());
                     String[] asArray = new String[houseTypeList.size()];
                     houseTypeList.toArray(asArray);
-                    houseTypeAdapter = new ArrayAdapter<String>(getContext(), R.layout.dropdown_menu, asArray);
+                    houseTypeAdapter = new ArrayAdapter<String>(mContext, R.layout.dropdown_menu, asArray);
                     houseTypeText.setAdapter(houseTypeAdapter);
                 }
                 break;
