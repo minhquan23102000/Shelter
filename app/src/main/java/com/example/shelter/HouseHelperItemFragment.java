@@ -349,6 +349,41 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
             ((MainActivity) mActivity).navigateTo(mapFragment, true);
         });
 
+        //Set on key listener to clear error
+        //On Key listener
+        View.OnKeyListener onKeyListener = (v, keyCode, event) -> {
+            if (v.getId() == R.id.house_name_edit_text) {
+                houseNameInputLayout.setError(null);
+            } else if (v.getId() == R.id.house_point_edit_text) {
+                housePointInputLayout.setError(null);
+            } else if (v.getId() == R.id.area_edit_text) {
+                areaInputLayout.setError(null);
+            } else if (v.getId() == R.id.floor_edit_text) {
+                floorInputLayout.setError(null);
+            } else if (v.getId() == R.id.bedrooms_edit_text) {
+                bedRoomsInputLayout.setError(null);
+            } else if (v.getId() == R.id.bathrooms_edit_text) {
+                bathRoomsInputLayout.setError(null);
+            } else if (v.getId() == R.id.rent_cost_edit_text) {
+                rentCostInputLayout.setError(null);
+            } else if (v.getId() == R.id.sale_price_edit_text) {
+                salePriceInputLayout.setError(null);
+            } else if (v.getId() == R.id.yearbuilt_edit_text) {
+                yearBuiltInputLayout.setError(null);
+            }
+            return false;
+        };
+
+        housePointEditText.setOnKeyListener(onKeyListener);
+        houseNameEditText.setOnKeyListener(onKeyListener);
+        areaEditText.setOnKeyListener(onKeyListener);
+        floorEditText.setOnKeyListener(onKeyListener);
+        bedRoomsEditText.setOnKeyListener(onKeyListener);
+        bathRoomsEditText.setOnKeyListener(onKeyListener);
+        salePriceEditText.setOnKeyListener(onKeyListener);
+        rentCostEditText.setOnKeyListener(onKeyListener);
+        yearBuiltEditText.setOnKeyListener(onKeyListener);
+
 
         return view;
     }
@@ -685,32 +720,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
     private void checkDataValid() {
 
-        //Set on key listener to clear error
-        //On Key listener
-        View.OnKeyListener onKeyListener = (v, keyCode, event) -> {
-            if (v.getId() == R.id.house_name_edit_text) {
-                houseNameInputLayout.setError(null);
-            } else if (v.getId() == R.id.house_point_edit_text) {
-                housePointInputLayout.setError(null);
-            } else if (v.getId() == R.id.area_edit_text) {
-                areaInputLayout.setError(null);
-            } else if (v.getId() == R.id.floor_edit_text) {
-                floorInputLayout.setError(null);
-            } else if (v.getId() == R.id.bedrooms_edit_text) {
-                bedRoomsInputLayout.setError(null);
-            } else if (v.getId() == R.id.bathrooms_edit_text) {
-                bathRoomsInputLayout.setError(null);
-            } else if (v.getId() == R.id.rent_cost_edit_text) {
-                salePriceInputLayout.setError(null);
-            } else if (v.getId() == R.id.sale_price_edit_text) {
-                salePriceInputLayout.setError(null);
-            } else if (v.getId() == R.id.yearbuilt_edit_text) {
-                yearBuiltInputLayout.setError(null);
-            }
 
-
-            return false;
-        };
 
         clickUpdateAndDataIsValid = false;
         boolean flag = true;
