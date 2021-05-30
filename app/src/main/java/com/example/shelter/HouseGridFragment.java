@@ -77,16 +77,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private View productGrid;
     //Menu container
     private View menuLayout;
-    //Menu Items
-    private MaterialButton castAWishMenu;
-    private MaterialButton signOutMenu;
-    private MaterialButton shelterStatisticMenu;
-    private MaterialButton houseHelperMenu;
-    private MaterialButton myAccountMenu;
-    private MaterialButton yourFavouriteMenu;
 
     //Query value
-
     private String selectionForWishLoader = null;
     private String selectionForHouseLoader = null;
 
@@ -449,10 +441,11 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     private void createMenuItem(View view) {
 
         //House Viewer
-        signOutMenu = view.findViewById(R.id.sign_out_menu);
-        castAWishMenu = view.findViewById(R.id.cast_a_wish_menu);
-        yourFavouriteMenu = view.findViewById(R.id.your_favourite_menu);
-        myAccountMenu = view.findViewById(R.id.my_account_menu);
+        MaterialButton signOutMenu = view.findViewById(R.id.sign_out_menu);
+        //Menu Items
+        MaterialButton castAWishMenu = view.findViewById(R.id.cast_a_wish_menu);
+        MaterialButton yourFavouriteMenu = view.findViewById(R.id.your_favourite_menu);
+        MaterialButton myAccountMenu = view.findViewById(R.id.my_account_menu);
         final MaterialButton termPrivacyMenu = view.findViewById(R.id.privacy_terms);
 
         signOutMenu.setOnClickListener(this);
@@ -466,8 +459,8 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         termPrivacyMenu.setOnClickListener(this);
 
         //House Owner
-        houseHelperMenu = view.findViewById(R.id.house_helper_menu);
-        shelterStatisticMenu = view.findViewById(R.id.shelter_statistics_menu);
+        MaterialButton houseHelperMenu = view.findViewById(R.id.house_helper_menu);
+        MaterialButton shelterStatisticMenu = view.findViewById(R.id.shelter_statistics_menu);
         final MaterialButton contactManagerMenu = view.findViewById(R.id.contact_manager_menu);
 
         if (sessionManager.getUserRole().intValue() == ShelterDBContract.UserEntry.VIEWER.intValue()) {
