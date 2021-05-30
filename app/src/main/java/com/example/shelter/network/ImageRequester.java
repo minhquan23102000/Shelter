@@ -1,42 +1,25 @@
-package com.example.shelter.Network;
+package com.example.shelter.network;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import android.net.Uri;
-import android.os.LimitExceededException;
 import android.util.Log;
 
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 
 import com.bumptech.glide.Glide;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
 import com.example.shelter.R;
 import com.example.shelter.adapter.ImageSliderAdapter;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.crypto.IllegalBlockSizeException;
 
 
 public class ImageRequester {

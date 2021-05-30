@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,8 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -32,7 +31,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.TimeZone;
 
 public class MyAccountFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {

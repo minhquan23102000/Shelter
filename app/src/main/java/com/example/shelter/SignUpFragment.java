@@ -3,13 +3,9 @@ package com.example.shelter;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,26 +16,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract;
-import com.example.shelter.Data.ShelterDBHelper;
+import com.example.shelter.data.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Year;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
 
 public class SignUpFragment extends Fragment {
     static final public String LOG_TAG = SignUpFragment.class.getSimpleName();

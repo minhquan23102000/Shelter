@@ -1,15 +1,12 @@
-package com.example.shelter.Data;
+package com.example.shelter.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.shelter.MainActivity;
 import com.example.shelter.MapsFragment;
 import com.example.shelter.MyAccountFragment;
-import com.example.shelter.R;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;

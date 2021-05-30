@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,9 +19,9 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
-import com.example.shelter.Data.ShelterDBContract.RatingEntry;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
-import com.example.shelter.Data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.RatingEntry;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.SessionManager;
 import com.example.shelter.adapter.YourFavouriteHouseCursorAdapter;
 
 import java.util.ArrayList;

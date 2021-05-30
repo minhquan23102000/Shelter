@@ -10,12 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
 
-import com.example.shelter.Data.ShelterDBHelper;
-import com.example.shelter.Network.ImageRequester;
+import com.example.shelter.data.ShelterDBHelper;
+import com.example.shelter.network.ImageRequester;
 import com.example.shelter.R;
 
 public class HouseCursorAdapter extends CursorAdapter {

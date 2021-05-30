@@ -1,4 +1,4 @@
-package com.example.shelter.Data;
+package com.example.shelter.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -9,15 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
-import com.example.shelter.Data.ShelterDBContract.HouseTypeEntry;
-import com.example.shelter.Data.ShelterDBContract.RatingEntry;
-import com.example.shelter.Data.ShelterDBContract.WishEntry;
-import com.example.shelter.Data.ShelterDBContract.AlertEntry;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.ShelterDBContract.HouseTypeEntry;
+import com.example.shelter.data.ShelterDBContract.RatingEntry;
+import com.example.shelter.data.ShelterDBContract.WishEntry;
+import com.example.shelter.data.ShelterDBContract.AlertEntry;
 
 
 public class ShelterDBProvider extends ContentProvider {

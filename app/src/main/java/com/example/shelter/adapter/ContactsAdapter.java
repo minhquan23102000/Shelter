@@ -2,7 +2,6 @@ package com.example.shelter.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,16 +11,14 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.shelter.Data.ShelterDBContract.RatingEntry;
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
-import com.example.shelter.Data.ShelterDBHelper;
+import com.example.shelter.data.ShelterDBContract.RatingEntry;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.ShelterDBHelper;
 import com.example.shelter.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class ContactsAdapter extends CursorAdapter {
 

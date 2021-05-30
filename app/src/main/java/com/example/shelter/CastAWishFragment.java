@@ -12,10 +12,10 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
-import com.example.shelter.Data.ShelterDBContract.HouseTypeEntry;
-import com.example.shelter.Data.ShelterDBContract.WishEntry;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.ShelterDBContract.HouseTypeEntry;
+import com.example.shelter.data.ShelterDBContract.WishEntry;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,10 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Toast;
 
-import com.example.shelter.Data.ShelterDBHelper;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.shelter.data.ShelterDBHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;

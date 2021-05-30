@@ -7,10 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
-
-import com.bumptech.glide.Glide;
-import com.example.shelter.Network.ImageRequester;
+import com.example.shelter.network.ImageRequester;
 import com.example.shelter.R;
 import com.google.firebase.storage.StorageReference;
 import com.smarteist.autoimageslider.SliderViewAdapter;

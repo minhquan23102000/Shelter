@@ -43,7 +43,7 @@
         </activity>
 
         <provider
-            android:name=".Data.ShelterDBProvider"
+            android:name=".data.ShelterDBProvider"
             android:authorities="com.example.shelter"
             android:exported="false" />
     </application>

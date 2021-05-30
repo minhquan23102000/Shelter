@@ -22,11 +22,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
-import com.example.shelter.Data.ShelterDBContract.RatingEntry;
-import com.example.shelter.Network.ImageRequester;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.ShelterDBContract.RatingEntry;
+import com.example.shelter.network.ImageRequester;
 import com.example.shelter.adapter.ContactsAdapter;
 import com.google.android.material.textfield.TextInputLayout;
 

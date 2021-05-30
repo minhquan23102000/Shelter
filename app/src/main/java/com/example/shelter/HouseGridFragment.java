@@ -28,10 +28,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
-import com.example.shelter.Data.ShelterDBHelper;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.ShelterDBHelper;
 import com.example.shelter.staggeredgridlayout.HouseGridItemDecoration;
 import com.example.shelter.staggeredgridlayout.StaggeredHouseCardRecyclerViewAdapter;
 import com.google.android.material.button.MaterialButton;

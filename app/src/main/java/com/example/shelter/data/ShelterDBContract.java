@@ -1,11 +1,10 @@
-package com.example.shelter.Data;
+package com.example.shelter.data;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.Editable;
@@ -13,9 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.shelter.MainActivity;
 import com.example.shelter.R;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

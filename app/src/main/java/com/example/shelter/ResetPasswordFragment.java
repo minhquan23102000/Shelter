@@ -16,14 +16,13 @@ import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
 import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.shelter.Data.SessionManager;
-import com.example.shelter.Data.ShelterDBContract.UserEntry;
+import com.example.shelter.data.SessionManager;
+import com.example.shelter.data.ShelterDBContract.UserEntry;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;

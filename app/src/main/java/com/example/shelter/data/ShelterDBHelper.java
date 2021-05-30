@@ -1,29 +1,18 @@
-package com.example.shelter.Data;
+package com.example.shelter.data;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.example.shelter.BuildConfig;
 import com.example.shelter.MainActivity;
-import com.example.shelter.Data.ShelterDBContract.HouseEntry;
+import com.example.shelter.data.ShelterDBContract.HouseEntry;
 import com.example.shelter.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 
 public class ShelterDBHelper extends SQLiteAssetHelper {

@@ -1,4 +1,4 @@
-package com.example.shelter.Network;
+package com.example.shelter.network;
 
 import java.util.List;
 
