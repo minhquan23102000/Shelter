@@ -1,6 +1,8 @@
 package com.example.shelter;
 
+import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,44 +33,51 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
     private static final int GET_DATA_HOUSES = 1990;
 
     public static final String TAG = HousesHelperFragment.class.getName();
+    
+    
+    //Context and Activity
+    private Context mContext;
+    private Activity mActivity;
+    
+    //Data
     private SessionManager sessionManager;
-
     private List<String> housesOwnerID;
 
-    // Title TextView
-    private TextView title;
     //Count  Items TextView
     private TextView countItemsTV;
-    //TurnBack Button
-    private ImageButton turnBackBT;
-    //Add a house Button
-    private ImageButton addAHouse;
     //Favourite House Cursor Adapter
     private YourFavouriteHouseCursorAdapter mCursorAdapter;
-    //List View
-    private ListView houseListView;
+
+
+    @Override
+    public void onCreate(@Nullable  Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        mContext = getContext();
+        sessionManager = new SessionManager(mContext);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.favourite_house_fragment, container, false);
-        turnBackBT = view.findViewById(R.id.close_favourite);
-        title = view.findViewById(R.id.title);
+        final View view = inflater.inflate(R.layout.favourite_house_fragment, container, false);
+        //TurnBack Button
+        final ImageButton turnBackBT = view.findViewById(R.id.close_favourite);
+        // Title TextView
+        final TextView title = view.findViewById(R.id.title);
         countItemsTV = view.findViewById(R.id.count_items_favourite);
-        addAHouse = view.findViewById(R.id.add_a_house);
+        //Add a house Button
+        final ImageButton addAHouse = view.findViewById(R.id.add_a_house);
         //Set title
         title.setText(R.string.house_helper);
-
-        //Init session manager
-        sessionManager = new SessionManager(getContext());
 
         //Set close Fragment Listener
         turnBackBT.setOnClickListener(v -> getParentFragmentManager().popBackStack());
 
         addAHouse.setOnClickListener(v -> {
             Fragment fragment = HouseHelperItemFragment.NewInstance(-1);
-            ((NavigationHost) getActivity()).navigateTo(fragment, true);
+            ((NavigationHost) mActivity).navigateTo(fragment, true);
         });
 
         return view;
@@ -79,14 +88,14 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         super.onViewCreated(view, savedInstanceState);
         housesOwnerID = new ArrayList<>();
         //Init Adapter and Listview
-        houseListView = view.findViewById(R.id.list_item_favourite);
-        mCursorAdapter = new YourFavouriteHouseCursorAdapter(getContext(), null);
+        //List View
+        final ListView houseListView = view.findViewById(R.id.list_item_favourite);
+        mCursorAdapter = new YourFavouriteHouseCursorAdapter(mContext, null);
         houseListView.setAdapter(mCursorAdapter);
 
         //Set On Item click listener
-        houseListView.setOnItemClickListener((parent, view1, position, id) -> {
-            ((NavigationHost) getActivity()).navigateTo(HouseHelperItemFragment.NewInstance((int)id), true);
-        });
+        houseListView.setOnItemClickListener((parent, view1, position, id) ->
+                ((NavigationHost) mActivity).navigateTo(HouseHelperItemFragment.NewInstance((int)id), true));
     }
 
     @Override
@@ -114,7 +123,7 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
                 };
                 selection = RatingEntry.COLUMN_USER_ID + " = ? AND " + RatingEntry.COLUMN_STARS + " = ?";
                 selectionArgs = new String[]{userId.toString(), RatingEntry.HOUSE_OWNER.toString()};
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
@@ -140,13 +149,15 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
                 selection += " AND " + HouseEntry.COLUMN_HOUSE_STATE + " != " + HouseEntry.STATE_TRUE_DEATH;
                 Log.d(TAG, "onCreateLoader: GET_DATA_HOUSES selection: " + selection);
 
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
                         null,                   // No selection arguments
                         HouseEntry.COLUMN_HOUSE_STATE + " DESC");// Default sort order
                 break;
+            default:
+                throw  new IllegalArgumentException("Illegal Loader ID for " + id);
         }
         return cursorLoader;
     }
