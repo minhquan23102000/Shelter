@@ -1,7 +1,9 @@
 package com.example.shelter;
 
 
+import android.app.Activity;
 import android.content.ContentUris;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,8 +34,14 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
     private static final int GET_LIST_DATA_HOUSE_FAVOURITE_LOADER = 1000;
 
     public static final String TAG = YourFavouriteFragment.class.getName();
+    
+    
+    //Context and Activity
+    private Context mContext;
+    private Activity mActivity;
+    
+    //Data
     private SessionManager sessionManager;
-
     private List<String> houseFavouriteID;
     private List<String> parameterFavouriteQuery;
 
@@ -47,16 +55,22 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
     //List View
     private ListView favouriteHouseListView;
 
+    @Override
+    public void onCreate(@Nullable  Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        mContext = getContext();
+        sessionManager = new SessionManager(mContext);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.favourite_house_fragment, container, false);
-        sessionManager = new SessionManager(getContext());
         houseFavouriteID = new ArrayList<>();
         parameterFavouriteQuery = new ArrayList<>();
 
-        countFavouriteTV = (TextView) view.findViewById(R.id.count_items_favourite);
+        countFavouriteTV = view.findViewById(R.id.count_items_favourite);
         turnBackBT = view.findViewById(R.id.close_favourite);
         final ImageButton addAHouse = view.findViewById(R.id.add_a_house);
         addAHouse.setVisibility(View.GONE);
@@ -64,7 +78,7 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
         //Init Adapter and Listview
         favouriteHouseListView = view.findViewById(R.id.list_item_favourite);
         View emptyView = inflater.inflate(R.layout.empty_view, container, false);
-        mCursorAdapter = new YourFavouriteHouseCursorAdapter(getContext(), null);
+        mCursorAdapter = new YourFavouriteHouseCursorAdapter(mContext, null);
         favouriteHouseListView.setAdapter(mCursorAdapter);
         favouriteHouseListView.setEmptyView(emptyView);
 
@@ -72,16 +86,11 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
         //Set Item click listener
         favouriteHouseListView.setOnItemClickListener((parent, view1, position, id) -> {
             String houseUri = ContentUris.withAppendedId(HouseEntry.CONTENT_URI, id).toString();
-            ((NavigationHost) getActivity()).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
+            ((NavigationHost) mActivity).navigateTo(HouseDetailFragment.NewInstance(houseUri), true);
         });
 
         //Set close Fragment Listener
-        turnBackBT.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager().popBackStack();
-            }
-        });
+        turnBackBT.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         return view;
     }
 
@@ -92,12 +101,13 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
     }
 
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection;
         CursorLoader cursorLoader = null;
         String selection;
-        String selectionArgs[];
+        String[] selectionArgs;
         Long userId = ContentUris.parseId(sessionManager.getUserUri());
         switch (id) {
             case GET_LIST_HOUSE_FAVOURITE_ID_LOADER:
@@ -109,7 +119,7 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
                 };
                 selection = RatingEntry.COLUMN_USER_ID + " = ? AND " + RatingEntry.COLUMN_STARS + " = ?";
                 selectionArgs = new String[]{userId.toString(), RatingEntry.FAVOURITE.toString()};
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         RatingEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
@@ -132,13 +142,15 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
                 selection += " AND " + HouseEntry.COLUMN_HOUSE_STATE + " != " + HouseEntry.STATE_TRUE_DEATH;
                 selectionArgs = houseFavouriteID.toArray(new String[houseFavouriteID.size()]);
 
-                cursorLoader = new CursorLoader(getContext(),   // Parent activity context
+                cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query
                         projection,             // Columns to include in the resulting Cursor
                         selection,                   // No selection clause
                         selectionArgs,                   // No selection arguments
                         HouseEntry.COLUMN_HOUSE_STATE + " DESC");// Default sort order
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid ID LOADER AT " + TAG + " WITH LOADER ID = " + id);
         }
 
         return cursorLoader;
