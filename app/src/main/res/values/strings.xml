@@ -140,6 +140,8 @@
     <string name="google_sign_in_failed">Google sign in failed, please check your network and try again!</string>
     <string name="sign_in_with_google">Sign in with google</string>
     <string name="change">CHANGE</string>
+    <string name="new_houses">New houses</string>
+    <string name="hot_houses">Hot houses</string>
 
 
 </resources>

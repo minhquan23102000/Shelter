@@ -77,7 +77,7 @@ public class ShelterStatisticsFragment extends Fragment implements LoaderManager
 
 
     private void setUpToolbar(View view) {
-        Toolbar toolbar = view.findViewById(R.id.app_bar);
+        Toolbar toolbar = view.findViewById(R.id.shelter_statistics_app_bar);
         AppCompatActivity activity = (AppCompatActivity) mActivity;
         if (activity != null) {
             activity.setSupportActionBar(toolbar);

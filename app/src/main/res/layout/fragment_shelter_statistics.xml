@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/app_bar"
+            android:id="@+id/shelter_statistics_app_bar"
             style="@style/Widget.Shelter.Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"

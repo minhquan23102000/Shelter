@@ -18,6 +18,15 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/newer"
+        android:title="@string/new_houses"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/hotter"
+        android:title="@string/hot_houses"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/expire_wish"
         android:title="@string/expire_wish"
         app:showAsAction="never" />

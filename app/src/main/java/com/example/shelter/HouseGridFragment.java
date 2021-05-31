@@ -47,7 +47,6 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
     public static final String TAG = HouseGridFragment.class.getName();
     private static final int HOUSE_LOADER = 0;
     private static final int GET_WISHED_HOUSE_ID_LOADER = 684;
-    private static final int WISHED_HOUSE_LOADER = 666;
     private static boolean isFirstLoad = true;
     
     
@@ -133,7 +132,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         // There is no House data yet (until the loader finishes) so pass in null for the Cursor.
         setItemOnClickListener();
         cursor = null;
-        recyclerViewAdapter = new StaggeredHouseCardRecyclerViewAdapter(mContext, cursor, listener);
+        recyclerViewAdapter = new StaggeredHouseCardRecyclerViewAdapter(mContext, null, listener);
         recyclerView.setAdapter(recyclerViewAdapter);
 
         //Padding items in recycler View
@@ -206,7 +205,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         }
 
 
-        toolbar.inflateMenu(R.menu.shr_toolbar_menu);
+        toolbar.inflateMenu(R.menu.house_grid_toolbar_menu);
         toolbar.setOverflowIcon(AppCompatResources.getDrawable(mContext, R.drawable.shr_filter));
         toolbar.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
@@ -216,7 +215,13 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
             } else if (itemId == R.id.name_a_z) {
                 sortOrder = HouseEntry.COLUMN_HOUSE_NAME + " ASC";
                 LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
-            } else if (itemId == R.id.expire_wish) {
+            } else if (itemId == R.id.hotter) {
+                sortOrder = HouseEntry.COLUMN_HOUSE_COUNT_VIEWS + " DESC";
+                LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
+            } else if (itemId == R.id.newer) {
+                sortOrder = HouseEntry.COLUMN_HOUSE_CREATE_DAY + " ASC";
+                LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
+            }else if (itemId == R.id.expire_wish) {
                 sessionManager.expireWishfulPointData();
                 if (wishedHouses != null) {
                     wishedHouses.clear();
@@ -233,10 +238,10 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
 
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, @NonNull MenuInflater menuInflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater);
         menu.clear();
-        menuInflater.inflate(R.menu.shr_toolbar_menu, menu);
+        menuInflater.inflate(R.menu.house_grid_toolbar_menu, menu);
 
         //Init searchView
         MenuItem item = menu.findItem(R.id.action_search);

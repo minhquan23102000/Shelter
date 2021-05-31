@@ -38,11 +38,11 @@
 
         <include
             android:id="@+id/includedBack"
-            layout="@layout/backlayer_backdrop" />
+            layout="@layout/house_grid_fragment_backlayer" />
 
         <include
             android:id="@+id/includedFront"
-            layout="@layout/frontlayer_backdrop" />
+            layout="@layout/house_grid_fragment_frontlayer" />
 
     </com.roacult.backdrop.BackdropLayout>
 
