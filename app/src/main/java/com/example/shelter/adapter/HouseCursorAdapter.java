@@ -97,7 +97,6 @@ public class HouseCursorAdapter extends CursorAdapter {
         if (distance > 0) {
             distanceTextView.setText(distance + " km");
         } else {
-            Toast.makeText(context, context.getString(R.string.unabale_to_locate_user_location), Toast.LENGTH_LONG).show();
             distanceTextView.setText(R.string.unlocatable);
         }
 
