@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.shelter.data.SessionManager;
 import com.example.shelter.data.ShelterDBContract.HouseEntry;
@@ -96,6 +97,14 @@ public class HousesHelperFragment extends Fragment implements LoaderManager.Load
         //Set On Item click listener
         houseListView.setOnItemClickListener((parent, view1, position, id) ->
                 ((NavigationHost) mActivity).navigateTo(HouseHelperItemFragment.NewInstance((int)id), true));
+
+        //Set swipe up to refresh layout
+        final SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_to_refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            LoaderManager.getInstance(HousesHelperFragment.this)
+                    .restartLoader(GET_LIST_HOUSES_OWNER_ID_LOADER, null, HousesHelperFragment.this);
+            swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
     @Override

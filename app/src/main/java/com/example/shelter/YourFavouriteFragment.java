@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.shelter.data.ShelterDBContract.RatingEntry;
 import com.example.shelter.data.ShelterDBContract.HouseEntry;
@@ -91,6 +92,14 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
 
         //Set close Fragment Listener
         turnBackBT.setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        //Set swipe up to refresh layout
+        final SwipeRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_to_refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            LoaderManager.getInstance(YourFavouriteFragment.this)
+                    .restartLoader(GET_LIST_HOUSE_FAVOURITE_ID_LOADER, null, YourFavouriteFragment.this);
+            swipeRefreshLayout.setRefreshing(false);
+        });
         return view;
     }
 
