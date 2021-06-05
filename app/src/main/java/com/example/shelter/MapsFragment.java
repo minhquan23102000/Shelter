@@ -218,7 +218,7 @@ public class MapsFragment extends Fragment {
                 lastMarkerLatLng = place.getLatLng();
                 if (fatherContext.equals(HouseHelperItemFragment.TAG)) {
                     lastMarkerName = place.getAddress();
-                    wishPointNameEditText.setText(place.getAddress());
+                    wishPointNameEditText.setText(lastMarkerName);
                 }
             }
 

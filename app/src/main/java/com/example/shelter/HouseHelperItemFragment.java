@@ -426,7 +426,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
     }
 
     private void setUpToolbar(View view) {
-        Toolbar toolbar = view.findViewById(R.id.app_bar);
+        Toolbar toolbar = view.findViewById(R.id.house_helper_tool_bar);
         AppCompatActivity activity = (AppCompatActivity) mActivity;
         if (activity != null) {
             activity.setSupportActionBar(toolbar);
