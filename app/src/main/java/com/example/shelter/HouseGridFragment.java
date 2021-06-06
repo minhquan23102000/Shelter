@@ -219,7 +219,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                 sortOrder = HouseEntry.COLUMN_HOUSE_COUNT_VIEWS + " DESC";
                 LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
             } else if (itemId == R.id.newer) {
-                sortOrder = HouseEntry.COLUMN_HOUSE_CREATE_DAY + " ASC";
+                sortOrder = HouseEntry.COLUMN_HOUSE_YEAR_BUILT + " DESC";
                 LoaderManager.getInstance(HouseGridFragment.this).restartLoader(HOUSE_LOADER, null, HouseGridFragment.this);
             }else if (itemId == R.id.expire_wish) {
                 sessionManager.expireWishfulPointData();
