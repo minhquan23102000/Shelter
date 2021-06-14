@@ -784,9 +784,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
             new MaterialAlertDialogBuilder(mContext)
                     .setMessage("Are you sure you want to update this house? You can't redo after update.")
-                    .setNeutralButton(R.string.cancel, (dialog, which) -> {
-
-                    })
+                    .setNeutralButton(R.string.cancel, (dialog, which) -> clickUpdateAndDataIsValid = false)
                     .setPositiveButton(R.string.yes, (dialog, which) -> update())
                     .show();
 
