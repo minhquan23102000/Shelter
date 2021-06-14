@@ -292,6 +292,7 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
         //Init redo button to redo change
         MaterialButton redoButton = view.findViewById(R.id.back_button);
         redoButton.setOnClickListener(v -> {
+            clickUpdateAndDataIsValid = false;
             if (!isNewHouse) {
                 Fragment fragment = new HouseHelperItemFragment();
                 Bundle saveState = new Bundle();
