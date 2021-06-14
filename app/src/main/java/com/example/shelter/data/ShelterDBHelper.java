@@ -8,6 +8,7 @@ import android.location.Location;
 import androidx.annotation.Nullable;
 
 import com.example.shelter.MainActivity;
+import com.example.shelter.MapsFragment;
 import com.example.shelter.data.ShelterDBContract.HouseEntry;
 import com.example.shelter.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -43,7 +44,7 @@ public class ShelterDBHelper extends SQLiteAssetHelper {
         int longitudeColumnIndex = cursor.getColumnIndex(HouseEntry.COLUMN_HOUSE_LONGITUDE);
         //Get House and point location
         Location pointLocation = new Location("");
-        if (sessionManager.haveWishPointData()) {
+        if (sessionManager.haveWishPointData() && sessionManager.getWishfulPointName() != null) {
             LatLng tempPoint = sessionManager.getWishfulPointLatLng();
             pointLocation.setLatitude(tempPoint.latitude);
             pointLocation.setLongitude(tempPoint.longitude);

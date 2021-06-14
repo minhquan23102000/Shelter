@@ -341,7 +341,15 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
                     finalSelectionString = selectionForHouseLoader;
                 }
 
+                if (finalSelectionString == null) {
+                    finalSelectionString = "";
+                }
+                else  {
+                    finalSelectionString += " AND ";
+                }
 
+                finalSelectionString += HouseEntry.COLUMN_HOUSE_STATE + " = " + HouseEntry.STATE_VISIBLE;
+                Log.d(TAG, "onCreateLoader: finalSelection String " + finalSelectionString);
                 // This loader will execute the ContentProvider's query method on a background thread
                 cursorLoader = new CursorLoader(mContext,   // Parent activity context
                         HouseEntry.CONTENT_URI,   // Provider content URI to query

@@ -169,6 +169,8 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case GET_LIST_HOUSE_FAVOURITE_ID_LOADER:
+                houseFavouriteID = new ArrayList<>();
+                parameterFavouriteQuery = new ArrayList<>();
                 if (data.moveToFirst()) {
                     String countItems = data.getCount() + " ITEMS";
                     countFavouriteTV.setText(countItems);
@@ -176,8 +178,8 @@ public class YourFavouriteFragment extends Fragment implements LoaderManager.Loa
                         houseFavouriteID.add(data.getString(data.getColumnIndex(RatingEntry.COLUMN_HOUSE_ID)));
                         parameterFavouriteQuery.add("?");
                     } while (data.moveToNext());
-                    LoaderManager.getInstance(this).restartLoader(GET_LIST_DATA_HOUSE_FAVOURITE_LOADER, null, this);
                 }
+                LoaderManager.getInstance(this).restartLoader(GET_LIST_DATA_HOUSE_FAVOURITE_LOADER, null, this);
                 break;
             case GET_LIST_DATA_HOUSE_FAVOURITE_LOADER:
                 mCursorAdapter.swapCursor(data);

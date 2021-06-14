@@ -253,7 +253,7 @@ public class MapsFragment extends Fragment {
                 else {
                     lastMarkerName = wishPointNameEditText.getText().toString();
                     sessionManager.storeWishfulPoint(lastMarkerLatLng, lastMarkerName);
-                    getParentFragmentManager().popBackStackImmediate();
+                    getParentFragmentManager().popBackStack();
                 }
             }
 
