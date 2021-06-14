@@ -120,13 +120,8 @@ public class CastAWishFragment extends Fragment implements LoaderManager.LoaderC
             //Else we clear it and set text to null
             if (sessionManager.getWishfulPointName() == null) {
                 double latPoint, lngPoint;
-                try {
-                    latPoint = MainActivity.getUserLocation().getLatitude();
-                    lngPoint = MainActivity.getUserLocation().getLongitude();
-                } catch (NullPointerException e) {
-                    latPoint = MapsFragment.LAND_MARK_TOWER.latitude;
-                    lngPoint = MapsFragment.LAND_MARK_TOWER.longitude;
-                }
+                latPoint = MapsFragment.LAND_MARK_TOWER.latitude;
+                lngPoint = MapsFragment.LAND_MARK_TOWER.longitude;
                 Fragment mapFragment = MapsFragment.NewInstance(CastAWishFragment.TAG, latPoint, lngPoint);
                 ((MainActivity) mActivity).navigateTo(mapFragment, true);
             } else {
