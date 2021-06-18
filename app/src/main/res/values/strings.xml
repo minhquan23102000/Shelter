@@ -80,12 +80,12 @@
     <string name="here">HERE</string>
     <string name="give_this_place_a_name">Give this place a name</string>
     <string name="place_s_name">Place name</string>
-    <string name="number_of_bed_rooms">\"Number of bed rooms: \"</string>
-    <string name="num_of_bath_rooms">\"\nNumber of bath rooms: \"</string>
-    <string name="num_of_floors_floor">\"\nNumber of floors | floor: \"</string>
-    <string name="_year_built">\"\nYear built: \"</string>
-    <string name="_yard_size">\"\nYard size: \"</string>
-    <string name="_place">\"\nPlace: \"</string>
+    <string name="number_of_bed_rooms">Number of bed rooms: </string>
+    <string name="num_of_bath_rooms">\nNumber of bath rooms: </string>
+    <string name="num_of_floors_floor">\nNumber of floors | floor: </string>
+    <string name="_year_built">\nYear built: </string>
+    <string name="_yard_size">\nYard size: </string>
+    <string name="_place">\nPlace: </string>
     <string name="unlocatable">Unlocatable</string>
     <string name="order_by_price">Order by price</string>
     <string name="order_by_name">Order by name</string>
@@ -142,6 +142,7 @@
     <string name="change">CHANGE</string>
     <string name="new_houses">New houses</string>
     <string name="hot_houses">Hot houses</string>
+    <string name="redo_alert">Are you sure want to redo all the change?</string>
 
 
 </resources>

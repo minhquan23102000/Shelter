@@ -34,7 +34,6 @@ public class SignUpFragment extends Fragment {
     static final public String[] dropdownMenuItems = {
             "Male",
             "Female",
-            "Other"
     };
     
     

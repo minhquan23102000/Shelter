@@ -45,7 +45,6 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
     final public String[] dropdownMenuItems = {
             "Male",
             "Female",
-            "Other"
     };
     
     
@@ -150,10 +149,7 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
 
         setErrorInputCheck();
 
-        backButton.setOnClickListener(v -> {
-            final FragmentTransaction ft = getParentFragmentManager().beginTransaction();
-            ft.detach(MyAccountFragment.this).attach(MyAccountFragment.this).commit();
-        });
+        backButton.setOnClickListener(v -> LoaderManager.getInstance(MyAccountFragment.this).restartLoader(USER_LOADER, null, MyAccountFragment.this));
 
         return view;
     }
@@ -262,23 +258,9 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
                 phoneInputLayout.setError(null);
             }
 
-            if (!UserEntry.isDateBirthValid(dateEditText.getText())) {
-                dateInputLayout.setError(getString(R.string.date_birth_error_check));
-                flag = false;
-            } else {
-                dateInputLayout.setError(null);
-            }
-
-            if (!UserEntry.isIncomeValid(incomeEditText.getText())) {
-                incomeInputLayout.setError(getString(R.string.income_error_check));
-                flag = false;
-            } else {
-                incomeInputLayout.setError(null);
-            }
 
             //If all data are valid,
             if (flag) {
-                Log.d(LOG_TAG, "onClick: " + phoneString + "---" + phoneInData);
                 //Init temp data for deliver to another fragment
                 sessionManager.initUserTempData(phoneString, email.toString().trim(),
                         nameEditText.getText().toString().trim(),

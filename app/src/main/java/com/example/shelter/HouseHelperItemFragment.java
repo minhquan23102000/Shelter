@@ -291,22 +291,26 @@ public class HouseHelperItemFragment extends Fragment implements LoaderManager.L
 
         //Init redo button to redo change
         MaterialButton redoButton = view.findViewById(R.id.back_button);
-        redoButton.setOnClickListener(v -> {
-            clickUpdateAndDataIsValid = false;
-            if (!isNewHouse) {
-                Fragment fragment = new HouseHelperItemFragment();
-                Bundle saveState = new Bundle();
-                saveState.putInt(KEY_ARGUMENT_1, tempHouseId);
-                fragment.setArguments(saveState);
+        redoButton.setOnClickListener(v ->
+                new MaterialAlertDialogBuilder(mContext)
+                .setMessage(R.string.redo_alert)
+                .setNeutralButton(R.string.cancel, (dialog, which) -> {
 
-
-                //Reload fragment
-                ((MainActivity) mActivity).navigateTo(fragment, false);
-            } else {
-                getParentFragmentManager().popBackStack();
-            }
-
-        });
+                })
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    clickUpdateAndDataIsValid = false;
+                    if (!isNewHouse) {
+                        Fragment fragment = new HouseHelperItemFragment();
+                        Bundle saveState = new Bundle();
+                        saveState.putInt(KEY_ARGUMENT_1, tempHouseId);
+                        fragment.setArguments(saveState);
+                        //Reload fragment
+                        ((MainActivity) mActivity).navigateTo(fragment, false);
+                    } else {
+                        getParentFragmentManager().popBackStack();
+                    }
+                })
+                .show());
 
         //Find all needed view, prepare data for layout
         areaEditText = view.findViewById(R.id.area_edit_text);

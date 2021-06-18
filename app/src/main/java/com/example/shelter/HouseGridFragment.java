@@ -95,16 +95,15 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
         setHasOptionsMenu(true);
         mContext = getContext();
         mActivity = getActivity();
+        //Init Session Data for this context
+        sessionManager = new SessionManager(mContext);
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.house_grid_fragment, container, false);
-        //Init Session Data for this context
-        sessionManager = new SessionManager(mContext);
 
         //Init backdropLayout
         backdropLayout = view.findViewById(R.id.menu_container);
@@ -126,7 +125,7 @@ public class HouseGridFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
         recyclerView.setLayoutManager(gridLayoutManager);
-
+        productGrid.setBackground(AppCompatResources.getDrawable(mContext, R.drawable.shr_product_grid_background_shape));
 
         // Setup an Adapter for each row of House data in the Cursor.
         // There is no House data yet (until the loader finishes) so pass in null for the Cursor.

@@ -328,7 +328,6 @@ public class ShelterDBContract {
         public final static String COLUMN_USER_GENDER = "gender";
         public final static int GENDER_MALE = 0;
         public final static int GENDER_FEMALE = 1;
-        public final static int GENDER_OTHER = 2;
 
         /**
          * Date Birth of the USER.
