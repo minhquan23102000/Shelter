@@ -235,6 +235,20 @@ public class MyAccountFragment extends Fragment implements LoaderManager.LoaderC
                 nameInputLayout.setError(null);
             }
 
+            if (!UserEntry.isDateBirthValid(dateEditText.getText())) {
+                dateInputLayout.setError(getString(R.string.date_birth_error_check));
+                flag = false;
+            } else {
+                dateInputLayout.setError(null);
+            }
+
+            if (!UserEntry.isIncomeValid(incomeEditText.getText())) {
+                incomeInputLayout.setError(getString(R.string.income_error_check));
+                flag = false;
+            } else {
+                incomeInputLayout.setError(null);
+            }
+
             if (!UserEntry.isEmailValid(email)) {
                 emailInputLayout.setError(getString(R.string.email_error_check));
                 flag = false;
